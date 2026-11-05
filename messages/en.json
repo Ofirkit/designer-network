@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "title": "{product} — a closed platform for vetted designers",
+    "description": "A closed platform for designers vetted by a designer. Companies here commit to clear rules: every candidate gets an answer, with a reason."
+  },
+  "nav": {
+    "apply": "Apply",
+    "skipToContent": "Skip to content"
+  },
+  "hero": {
+    "eyebrow": "For designers in Israel",
+    "headline": "Your next design role. Without the black hole.",
+    "subheadline": "A closed platform for designers vetted by a designer. Companies here commit to clear rules: every candidate gets an answer, with a reason.",
+    "cta": "Apply to join"
+  },
+  "benefits": {
+    "title": "What you get",
+    "items": {
+      "review": "A real designer reviews your work, not an algorithm",
+      "profile": "A professional profile with case studies, instead of another resume file",
+      "answers": "Companies that commit to answering, with a reason and on time",
+      "control": "You decide what to share, and with whom"
+    }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "steps": {
+      "apply": "Apply with your portfolio and LinkedIn",
+      "review": "I review it personally and get back to you within 7 days",
+      "profile": "Approved? Build your profile, and companies will be able to find you"
+    }
+  },
+  "audience": {
+    "title": "Who it's for",
+    "body": "Product, UX/UI and web designers with 3+ years of professional experience and shipped work."
+  },
+  "founding": {
+    "title": "Founding members",
+    "body": "We're starting small: first we're building the designer community, and companies join next. The first designers will help shape how this works."
+  },
+  "form": {
+    "title": "Apply to join",
+    "intro": "It takes about three minutes. Fields marked as optional can be left empty.",
+    "optional": "optional",
+    "required": "required",
+    "groups": {
+      "about": "About you",
+      "work": "Your work",
+      "search": "Your search",
+      "confirm": "Confirm"
+    },
+    "fields": {
+      "full_name": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "phoneHint": "Never shown publicly.",
+      "linkedin_url": "LinkedIn profile",
+      "portfolio_url": "Portfolio link",
+      "specialty": "Specialty",
+      "years_experience": "Years of professional experience",
+      "product_type": "Product type",
+      "market": "Market",
+      "platforms": "Tools and platforms",
+      "industries": "Industries you've worked in",
+      "industriesHint": "For example: fintech, health, e-commerce",
+      "availability": "Job search status",
+      "confidential": "My search is confidential (I'm currently employed)",
+      "own_work": "All work in my portfolio is my own, or clearly credited",
+      "consent": "I've read the <link>privacy policy</link> and agree to my details being stored to use the platform"
+    },
+    "select": "Select",
+    "goodToKnowTitle": "Good to know",
+    "goodToKnow": "Joining doesn't guarantee a job. Companies on the platform search and reach out to designers themselves. What is guaranteed: a real answer to your application, never silence.",
+    "submit": "Send application",
+    "submitting": "Sending…",
+    "notConnected": "The form isn't connected yet. Submissions will work in the next build stage.",
+    "errorSummary": "Please fix the highlighted fields.",
+    "errors": {
+      "required": "This field is required.",
+      "tooLong": "This is too long.",
+      "invalidEmail": "Enter a valid email address.",
+      "invalidPhone": "Enter a valid phone number, or leave it empty.",
+      "invalidUrl": "Enter a full link, for example https://yourportfolio.com",
+      "invalidLinkedin": "Enter a LinkedIn profile link, for example https://www.linkedin.com/in/yourname",
+      "mustAccept": "Please confirm to continue.",
+      "duplicate": "We already have an application from this email.",
+      "cooldown": "You can reapply from {date}.",
+      "tooFast": "That was quick. Please take a moment and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "privacyNotice": {
+    "title": "Your privacy",
+    "body": "We collect only what's needed to review your application: the details in this form and links to your work. Only I see them during review. Providing them is voluntary, and you can ask to have them deleted at any time.",
+    "link": "Read the privacy policy"
+  },
+  "thanks": {
+    "title": "Thanks for applying.",
+    "body": "I review every portfolio personally and will get back to you within 7 days.",
+    "back": "Back to the homepage"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "intro": "Short and plain: what we store, why, and what you control.",
+    "sections": {
+      "what": {
+        "title": "What we store",
+        "body": "The details you entered in the form, links to your portfolio and LinkedIn, and later, the content you add to your profile."
+      },
+      "why": {
+        "title": "Why",
+        "body": "To review your application and, once approved, to show your profile to companies on the platform."
+      },
+      "who": {
+        "title": "Who sees it",
+        "body": "Only me during review. After approval, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to."
+      },
+      "voluntary": {
+        "title": "It's voluntary",
+        "body": "Providing your details is voluntary."
+      },
+      "control": {
+        "title": "Your control",
+        "body": "You can view, correct or delete your data at any time, from your profile or by email."
+      }
+    },
+    "contact": "Questions or deletion requests: <email></email>"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "rights": "© {year} {product}"
+  },
+  "options": {
+    "specialty": {
+      "product_design": "Product design",
+      "ux_ui": "UX/UI",
+      "web_design": "Web design",
+      "brand": "Brand",
+      "other": "Other"
+    },
+    "years_experience": {
+      "0-2": "0-2",
+      "3-5": "3-5",
+      "6-9": "6-9",
+      "10+": "10+"
+    },
+    "product_type": {
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "both": "Both"
+    },
+    "market": {
+      "b2b": "B2B",
+      "b2c": "B2C",
+      "both": "Both"
+    },
+    "platforms": {
+      "figma": "Figma",
+      "framer": "Framer",
+      "webflow": "Webflow",
+      "shopify": "Shopify",
+      "wordpress": "WordPress",
+      "other": "Other"
+    },
+    "availability": {
+      "actively_looking": "Actively looking",
+      "open_to_offers": "Open to offers",
+      "not_looking": "Not looking"
+    },
+    "declineReason": {
+      "no_process_case_studies": "Portfolio doesn't include case studies that show process",
+      "outside_focus": "Most work is outside the platform's current focus",
+      "not_enough_experience": "Less professional experience than currently required (3+ years)",
+      "portfolio_link_broken": "Portfolio link doesn't work",
+      "other": "Other"
+    }
+  }
+}

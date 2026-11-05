@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-heebo), ui-sans-serif, system-ui, sans-serif;
+
+  /* One accent color. Change it here. */
+  --color-accent: #2b45d4;
+  --color-accent-strong: #1f34a8;
+  --color-accent-soft: #eef0fc;
+
+  --color-ink: #0f1115;
+  --color-muted: #5b606b;
+  --color-line: #e6e7eb;
+  --color-paper: #ffffff;
+  --color-wash: #f6f6f4;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdf1f0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible, consistent focus everywhere. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+}
