@@ -4,6 +4,7 @@ import { ApplicationForm } from "@/components/application-form";
 import { Container } from "@/components/container";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { PRODUCT_NAME } from "@/config/site";
 
 const BENEFITS = ["review", "profile", "answers", "control"] as const;
 const STEPS = ["apply", "review", "profile"] as const;
@@ -29,9 +30,9 @@ export default async function LandingPage() {
           <Container className="pb-20 pt-16 sm:pb-28 sm:pt-24 lg:pb-36 lg:pt-32">
             <p className="text-sm font-medium text-accent">{t("hero.eyebrow")}</p>
             <h1 className="mt-5 max-w-4xl text-[2.6rem] font-semibold leading-[1.04] tracking-[-0.03em] sm:text-6xl lg:text-[5.25rem]">
-              {t("hero.headline")}
+              {t.rich("hero.headline", { br: () => <br /> })}
             </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{t("hero.subheadline")}</p>
+            <p className="mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{t("hero.subheadline", { product: PRODUCT_NAME })}</p>
             <a
               href="#apply"
               className="mt-10 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-base font-medium text-white transition-colors hover:bg-accent-strong"

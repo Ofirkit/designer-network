@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
   return {
     title: t("title", { product: PRODUCT_NAME }),
-    description: t("description"),
+    description: t("description", { product: PRODUCT_NAME }),
     metadataBase: process.env.NEXT_PUBLIC_SITE_URL
       ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
       : undefined,

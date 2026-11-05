@@ -200,8 +200,8 @@ NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_K
 Product name not decided: placeholder `[Product name]` in one constant.
 
 **Hero**
-- Headline: Your next design role. Without the black hole.
-- Subheadline: An exclusive community of designers, vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason.
+- Headline: Hiring is broken. On both sides.
+- Subheadline: Designers get ghosted. Companies drown in applications they can't judge. [Product name] is an exclusive community of vetted designers, with clear rules for both sides: companies answer every candidate, designers show up. And both are held to them.
 - CTA: Apply to join
 
 **What you get**
