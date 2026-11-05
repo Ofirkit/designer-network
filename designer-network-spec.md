@@ -75,7 +75,7 @@ Short privacy page (copy below).
 - "Delete my account" with confirmation; deletes the designer, case studies and stored images.
 
 ### 5. Admin `/admin` (only `ADMIN_EMAIL`)
-- **"Waiting for reply"** (main view): applications with `status = 'pending'` and `replied_at IS NULL`, oldest first. Rows older than 5 days highlighted in red.
+- **"Waiting for reply"** (main view): applications I haven't replied to yet: `status IN ('pending', 'declined')` and `replied_at IS NULL`, oldest `applied_at` first. Declined applicants stay here until I click "Send" on the decline email. Rows with `applied_at` older than 5 days highlighted in red.
 - **All applicants** with filters: status, specialty, product type, market, availability. Search by name or email.
 - **Applicant detail**:
   - All submitted fields, portfolio and LinkedIn as clickable links (new tab)
@@ -106,7 +106,10 @@ Short privacy page (copy below).
 | own_work | All work in my portfolio is my own, or clearly credited | checkbox | yes |
 | consent | I've read the privacy policy and agree to my details being stored to use the platform | checkbox | yes |
 
-Validation with zod on client and server, error messages next to fields. Honeypot field + reject submissions faster than 3 seconds. Duplicate email: if the existing application is `pending` or `approved` → "We already have an application from this email." If it is `declined`, accept it as a reapplication: update the row with the new answers and set `status = 'pending'`, clearing `reason`, `reason_note`, `replied_at` and `approved_at` (the earlier decline stays in `decline_history`).
+Validation with zod on client and server, error messages next to fields. Honeypot field + reject submissions faster than 3 seconds. Duplicate email:
+- Existing application is `pending` or `approved`, or `declined` but the decline email hasn't been sent yet (`replied_at IS NULL`) → "We already have an application from this email."
+- Existing application is `declined` and the latest `decline_history.declined_at` is less than 30 days ago → "You can reapply from {date}." ({date} = declined_at + 30 days.) Check this on the server, not only in the form.
+- Existing application is `declined` and 30 days or more have passed → accept it as a reapplication: update the row with the new answers, set `status = 'pending'` and `applied_at = now()`, and clear `reason`, `reason_note`, `replied_at` and `approved_at` (the earlier decline stays in `decline_history`).
 
 ## Database
 
@@ -114,6 +117,7 @@ Validation with zod on client and server, error messages next to fields. Honeypo
 - id uuid pk
 - user_id uuid null references auth.users (set when an approved designer first logs in)
 - created_at, updated_at (trigger)
+- applied_at timestamptz default now() (set on the first application and again on every reapplication; used for the waiting view, the 5-day highlight and the daily reminder)
 - full_name, email (unique), phone (null)
 - linkedin_url, portfolio_url
 - display_name (null), headline (null), bio (null), photo_path (null)
@@ -182,7 +186,7 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
    - Subject: "About your application"
    - Body: thanks for applying; I reviewed your portfolio personally; the reason (from the list) and my note; an invitation to reapply after improving (except for "Other"); my name.
    - Reply-to set to `ADMIN_EMAIL`, so applicants can answer me directly.
-5. **Daily reminder** (to `ADMIN_EMAIL`, Vercel Cron, 08:00 Israel time): number waiting for a reply and how many are older than 5 days, link to admin. Skip if zero.
+5. **Daily reminder** (to `ADMIN_EMAIL`, Vercel Cron, 08:00 Israel time): number waiting for a reply (same rule as the "Waiting for reply" view) and how many are older than 5 days, link to admin. Skip if zero.
 
 ## Environment variables
 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, EMAIL_FROM, ADMIN_EMAIL, CRON_SECRET, NEXT_PUBLIC_SITE_URL. Add `.env.example` without real values.
@@ -258,7 +262,8 @@ So the schema and naming fit what's coming:
 - [ ] Hebrew text entered by users (names, bios, case studies) displays in the right direction everywhere, including the admin
 - [ ] Form submission saves a row, sends emails 1 and 2, redirects to `/thanks`
 - [ ] Duplicate email and invalid URLs show clear errors
-- [ ] A declined applicant can reapply with the same email, and the admin detail shows the earlier decline date, reason, note and links
+- [ ] A declined applicant cannot reapply within 30 days of the decline email (clear message with the date they can reapply from)
+- [ ] A declined applicant can reapply with the same email after 30 days, and the admin detail shows the earlier decline date, reason, note and links
 - [ ] Clicking "Send" on a decline sends the email, sets `replied_at` and records the decline in `decline_history`
 - [ ] Anonymous users cannot read any table (verify with the anon key)
 - [ ] Only `ADMIN_EMAIL` can open `/admin`
@@ -266,7 +271,7 @@ So the schema and naming fit what's coming:
 - [ ] An approved designer must accept the designer rules before editing their profile
 - [ ] An approved designer can edit only their own profile and case studies, and cannot change their status
 - [ ] Deleting an account removes the row, case studies and stored images
-- [ ] Applicants waiting over 5 days are highlighted; "Mark as replied" removes them from the waiting view
+- [ ] Applicants waiting over 5 days are highlighted; declined applicants stay in the waiting view until the decline email is sent; "Mark as replied" or sending the decline removes them from the waiting view
 - [ ] Cron route rejects requests without `CRON_SECRET` and only sends when someone is waiting
 - [ ] No feature anywhere suggests or recommends designers to anyone
 
