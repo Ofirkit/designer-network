@@ -195,11 +195,12 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 - `contact_requests`: employer reaches out to a designer directly (not through a job application): employer_id, designer_id, job_id null, sent_at, response_due_at, responded_at null, response (interested / not_interested) null
 - `interview_reports`: application_id or contact_request_id, scheduled_at, reported_by (employer), outcome (attended / no_show / rescheduled_with_notice), designer_response text null (designer can respond), disputed boolean default false, created_at
 - `hire_confirmations`: job_id, designer_id, reported_by (employer / designer), confirmed_by_other boolean, created_at
-- `reviews` (both directions): reviewer_type (designer / employer), employer_id, designer_id, application_id or contact_request_id (exactly one: the interaction the review is about), rating 1–5, comment, response (from the reviewed side), responded_at, created_at. One review per side per interaction. A database trigger rejects any review that isn't allowed (see "Ratings" in Phase 2 rules).
+- `reviews` (both directions): reviewer_type (designer / employer), employer_id, designer_id, application_id or contact_request_id (exactly one: the interaction the review is about), comment, response (from the reviewed side), responded_at, created_at. One review per side per interaction.
+- `review_scores`: review_id, category, score 1–5. Database triggers reject a review with no interaction, and any category the interaction didn't unlock (see "Ratings" in Phase 2 rules).
 - `reports`: reporter type and id, reported type and id, reason, details, status (open / resolved), created_at
 - `messages`: thread between employer and designer (job_id null), sender, body, created_at
-- **Employer metrics** (view): answer rate, average response time, average actual process length vs. declared, average rating and number of reviews from designers
-- **Designer metrics** (view), the mirror of employer metrics: response rate to contact requests, average response time, interview attendance rate (from `interview_reports`, excluding disputed reports until resolved), average rating and number of reviews from companies
+- **Employer metrics** (view): answer rate, average response time, average actual process length vs. declared, average score per category and number of reviews from designers
+- **Designer metrics** (view), the mirror of employer metrics: response rate to contact requests, average response time, interview attendance rate (from `interview_reports`, excluding disputed reports until resolved), average score per category and number of reviews from companies
 
 ### RLS
 - Signup goes through a server action (Supabase Auth); the `designers` row is created by server code with the service role key on the first confirmed sign-in. No direct anon inserts.
@@ -301,14 +302,22 @@ So the schema and naming fit what's coming:
   - Employers: answer rate, response time, actual vs. declared process length. Employers can respond to reviews.
   - Designers: response rate to contact requests, response time, interview attendance. A designer can respond to a no-show report; disputed reports don't count until resolved.
   - New accounts on either side show "New on the platform" until there's enough data.
-- **Ratings go both ways, and only after a real interaction.** A designer can rate a company, and a company can rate a designer, only about a specific application or contact request where:
-  1. an interview happened, or
-  2. both sides exchanged messages, or
-  3. the other side missed its response deadline (a designer can rate a company that didn't answer their application in time; a company can rate a designer who didn't answer its contact request in time).
-  - One rating (1–5) and an optional comment per side per interaction. The rated side can respond once, publicly.
+- **Ratings go both ways, and only after a real interaction.** No interaction, no rating: a company that never answers an application can't be rated, but its answer rate shows it.
+  - A rating is about one application or one contact request, and is made of category scores (1–5 each, any can be skipped), plus one optional comment.
+  - The interaction decides which categories can be rated:
+
+    | Unlocked by | Designer rates company | Company rates designer |
+    |---|---|---|
+    | A conversation (messages both ways) or an interview | Communication | Communication |
+    | An interview | Respect; Process as described | Professionalism; Work as presented |
+    | A final outcome (offer, hire, no, withdrawn), after a conversation or interview | Closure | Follow-through |
+
+    Example: an employer who left mid-conversation can be rated only on Communication.
+  - Categories are shown separately, never merged into one overall score.
+  - A review must include at least one score (checked in the app).
+  - One review per side per interaction. The rated side can respond once, publicly.
   - Ratings are about professional conduct. Personal remarks can be reported and removed.
-  - Ratings are secondary to the objective track record and are shown next to it, never instead of it.
-  - Repeated violations on either side: warning, then removal.
+  - Ratings are shown next to the objective track record, never instead of it.
 - **Success** = a signed contract, reported in the platform: closing a role requires an outcome; the designer can also report a hire and earns a "Hired through the platform" badge; the other side is asked to confirm.
 - If an employer finds no relevant candidates, access is extended for free.
 - Unpaid assignment work stays the designer's.
