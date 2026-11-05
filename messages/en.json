@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "{product} — a closed platform for vetted designers",
-    "description": "A closed platform for designers vetted by a designer. Companies here commit to clear rules: every candidate gets an answer, with a reason."
+    "description": "A closed platform for designers vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason."
   },
   "nav": {
     "apply": "Apply",
@@ -10,13 +10,13 @@
   "hero": {
     "eyebrow": "For designers in Israel",
     "headline": "Your next design role. Without the black hole.",
-    "subheadline": "A closed platform for designers vetted by a designer. Companies here commit to clear rules: every candidate gets an answer, with a reason.",
+    "subheadline": "A closed platform for designers vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason.",
     "cta": "Apply to join"
   },
   "benefits": {
     "title": "What you get",
     "items": {
-      "review": "A real designer reviews your work, not an algorithm",
+      "review": "Real designers review your work, not an algorithm",
       "profile": "A professional profile with case studies, instead of another resume file",
       "answers": "Companies that commit to answering, with a reason and on time",
       "control": "You decide what to share, and with whom"
@@ -26,9 +26,14 @@
     "title": "How it works",
     "steps": {
       "apply": "Apply with your portfolio and LinkedIn",
-      "review": "I review it personally and get back to you within 7 days",
+      "review": "Our team of designers reviews it personally and gets back to you within 7 days",
       "profile": "Approved? Build your profile, and companies will be able to find you"
     }
+  },
+  "notAgency": {
+    "title": "Not a hiring agency",
+    "lead": "We don't place, introduce or recommend candidates.",
+    "body": "This is a closed platform where vetted designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept."
   },
   "audience": {
     "title": "Who it's for",
@@ -91,12 +96,12 @@
   },
   "privacyNotice": {
     "title": "Your privacy",
-    "body": "We collect only what's needed to review your application: the details in this form and links to your work. Only I see them during review. Providing them is voluntary, and you can ask to have them deleted at any time.",
+    "body": "We collect only what's needed to review your application: the details in this form and links to your work. Only our review team sees them during review. Providing them is voluntary, and you can ask to have them deleted at any time.",
     "link": "Read the privacy policy"
   },
   "thanks": {
     "title": "Thanks for applying.",
-    "body": "I review every portfolio personally and will get back to you within 7 days.",
+    "body": "We review every portfolio personally and will get back to you within 7 days.",
     "back": "Back to the homepage"
   },
   "privacy": {
@@ -113,7 +118,7 @@
       },
       "who": {
         "title": "Who sees it",
-        "body": "Only me during review. After approval, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to."
+        "body": "Only our review team during review. After approval, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to."
       },
       "voluntary": {
         "title": "It's voluntary",
@@ -128,7 +133,8 @@
   },
   "footer": {
     "privacy": "Privacy",
-    "rights": "© {year} {product}"
+    "rights": "© {year} {product}",
+    "notAgency": "Not a recruitment or placement agency. Designers and companies find each other directly."
   },
   "options": {
     "specialty": {

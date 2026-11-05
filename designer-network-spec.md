@@ -18,6 +18,9 @@ This spec covers **phase 1 only: the designer side + my admin area**. Design the
 - Vercel (with Vercel Cron for the daily reminder)
 - zod for validation
 
+## Voice
+Public copy speaks as "we" (a team of reviewers), never "I". This applies to the site and to emails 1 and 3.
+
 ## Language and layout
 - **Everything is in English**: website, application form, platform, admin and all emails. Marketing posts will be in Hebrew, outside the product.
 - Set up i18n from day one with `next-intl`, with `en` as the only shipped locale. Structure all strings so a Hebrew version (`he`, RTL) can be added later by adding a message file only, with no code changes. No language toggle yet.
@@ -42,14 +45,15 @@ Sections, top to bottom (copy below):
 1. Hero: headline, subheadline, CTA that scrolls to the form
 2. What you get (4 items)
 3. How it works (3 steps)
-4. Who it's for
-5. Founding members note
-6. Application form
-7. "Good to know" disclaimer, right above the submit button
-8. Footer with a link to `/privacy`
+4. Not a hiring agency
+5. Who it's for
+6. Founding members note
+7. Application form
+8. "Good to know" disclaimer, right above the submit button
+9. Footer with a link to `/privacy` and a one-line "not an agency" statement, on every page
 
 ### 2. `/thanks`
-Confirms the application: "Thanks for applying. I review every portfolio personally and will get back to you within 7 days."
+Confirms the application: "Thanks for applying. We review every portfolio personally and will get back to you within 7 days."
 
 ### 3. `/privacy`
 Short privacy page (copy below).
@@ -179,7 +183,7 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 - Other
 
 ## Emails (Resend, all in English)
-1. **Application received** (to applicant): thanks, "I review every portfolio personally and will get back to you within 7 days", plus the "Good to know" text.
+1. **Application received** (to applicant): thanks, "We review every portfolio personally and will get back to you within 7 days", plus the "Good to know" text.
 2. **New application alert** (to `ADMIN_EMAIL`): name, specialty, portfolio link, link to admin.
 3. **Approved** (to applicant): "You're in!", what happens next, login link to build the profile.
 4. **Declined** (to applicant): sent only when I click "Send" in the decline preview, never automatically on status change. Personal tone, signed by me. Default template:
@@ -196,19 +200,24 @@ Product name not decided: placeholder `[Product name]` in one constant.
 
 **Hero**
 - Headline: Your next design role. Without the black hole.
-- Subheadline: A closed platform for designers vetted by a designer. Companies here commit to clear rules: every candidate gets an answer, with a reason.
+- Subheadline: A closed platform for designers vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason.
 - CTA: Apply to join
 
 **What you get**
-- A real designer reviews your work, not an algorithm
+- Real designers review your work, not an algorithm
 - A professional profile with case studies, instead of another resume file
 - Companies that commit to answering, with a reason and on time
 - You decide what to share, and with whom
 
 **How it works**
 1. Apply with your portfolio and LinkedIn
-2. I review it personally and get back to you within 7 days
+2. Our team of designers reviews it personally and gets back to you within 7 days
 3. Approved? Build your profile, and companies will be able to find you
+
+**Not a hiring agency**
+- Lead: We don't place, introduce or recommend candidates.
+- Body: This is a closed platform where vetted designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept.
+- Footer line (every page): Not a recruitment or placement agency. Designers and companies find each other directly.
 
 **Who it's for**
 Product, UX/UI and web designers with 3+ years of professional experience and shipped work.
@@ -222,7 +231,7 @@ Joining doesn't guarantee a job. Companies on the platform search and reach out 
 **Privacy page**
 - What we store: the details you entered in the form, links to your portfolio and LinkedIn, and later, the content you add to your profile.
 - Why: to review your application and, once approved, to show your profile to companies on the platform.
-- Who sees it: only me during review. After approval, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to.
+- Who sees it: only our review team during review. After approval, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to.
 - Providing your details is voluntary.
 - You can view, correct or delete your data at any time, from your profile or by email.
 

@@ -8,7 +8,10 @@ export async function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-line">
       <Container className="flex flex-col gap-3 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-        <p>{t("rights", { year: new Date().getFullYear(), product: PRODUCT_NAME })}</p>
+        <div className="space-y-1">
+          <p>{t("rights", { year: new Date().getFullYear(), product: PRODUCT_NAME })}</p>
+          <p>{t("notAgency")}</p>
+        </div>
         <Link href="/privacy" className="underline-offset-4 hover:text-ink hover:underline">
           {t("privacy")}
         </Link>

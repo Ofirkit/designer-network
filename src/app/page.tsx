@@ -73,17 +73,28 @@ export default async function LandingPage() {
           </Container>
         </section>
 
+        {/* Not a hiring agency: stated plainly, on purpose (legal position). */}
+        <section className="border-t border-line">
+          <Container className="grid gap-10 py-16 sm:py-24 md:grid-cols-[1fr_2fr]">
+            <SectionTitle index="03">{t("notAgency.title")}</SectionTitle>
+            <div className="max-w-2xl">
+              <p className="text-2xl leading-snug tracking-tight sm:text-3xl">{t("notAgency.lead")}</p>
+              <p className="mt-5 text-lg leading-relaxed text-muted">{t("notAgency.body")}</p>
+            </div>
+          </Container>
+        </section>
+
         {/* 4. Who it's for  +  5. Founding members */}
         <section className="border-t border-line">
           <Container className="grid gap-10 py-16 sm:py-24 md:grid-cols-[1fr_2fr]">
-            <SectionTitle index="03">{t("audience.title")}</SectionTitle>
+            <SectionTitle index="04">{t("audience.title")}</SectionTitle>
             <p className="max-w-2xl text-2xl leading-snug tracking-tight sm:text-3xl">{t("audience.body")}</p>
           </Container>
         </section>
 
         <section className="bg-wash">
           <Container className="grid gap-10 py-16 sm:py-24 md:grid-cols-[1fr_2fr]">
-            <SectionTitle index="04">{t("founding.title")}</SectionTitle>
+            <SectionTitle index="05">{t("founding.title")}</SectionTitle>
             <p className="max-w-2xl text-lg leading-relaxed text-ink/80 sm:text-xl">{t("founding.body")}</p>
           </Container>
         </section>
@@ -92,7 +103,7 @@ export default async function LandingPage() {
         <section id="apply" className="scroll-mt-4 border-t border-line">
           <Container className="grid gap-12 py-16 sm:py-24 md:grid-cols-[1fr_2fr]">
             <div className="md:sticky md:top-10 md:self-start">
-              <SectionTitle index="05">{t("form.title")}</SectionTitle>
+              <SectionTitle index="06">{t("form.title")}</SectionTitle>
               <p className="mt-4 max-w-xs text-[15px] leading-relaxed text-muted">{t("form.intro")}</p>
               <div className="mt-8 max-w-xs rounded-xl border border-line p-5">
                 <h3 className="text-sm font-semibold">{t("privacyNotice.title")}</h3>
