@@ -1,51 +1,54 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
-import { z } from "zod";
-
-const emailSchema = z.string().trim().toLowerCase().pipe(z.email());
+import { PasswordField, TextField } from "@/components/form-fields";
+import { loginSchema } from "@/lib/validation/signup";
 
 export function LoginForm() {
   const t = useTranslations();
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [notice, setNotice] = useState<string | null>(null);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice(null);
-    const email = new FormData(event.currentTarget).get("email");
-    if (!emailSchema.safeParse(email).success) {
-      setError(t("form.errors.invalidEmail"));
+    const data = new FormData(event.currentTarget);
+    const result = loginSchema.safeParse({
+      email: String(data.get("email") ?? ""),
+      password: String(data.get("password") ?? ""),
+    });
+    if (!result.success) {
+      const next: { email?: string; password?: string } = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as "email" | "password";
+        next[key] ??= t(`form.errors.${issue.message === "invalidEmail" ? "invalidEmail" : "required"}`);
+      }
+      setErrors(next);
       return;
     }
-    setError(null);
-    // Later stage: send a magic link. Always answer "check your email",
-    // whether or not the account exists.
+    setErrors({});
+    // Later stage: Supabase signInWithPassword. On failure show only
+    // login.wrongCredentials, never which field was wrong.
     setNotice(t("login.notConnected"));
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
+    <form onSubmit={onSubmit} noValidate className="space-y-6">
+      <TextField name="email" type="email" label={t("login.email")} autoComplete="email" dir="ltr" error={errors.email} />
       <div>
-        <label htmlFor="email" className="mb-2 block text-[15px] font-medium">
-          {t("login.email")}
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          dir="ltr"
-          autoComplete="email"
-          aria-invalid={error ? true : undefined}
-          aria-describedby={error ? "email-error" : undefined}
-          className="block w-full rounded-lg border border-line bg-paper px-3.5 py-2.5 text-start text-base transition-colors hover:border-ink/40 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 aria-[invalid=true]:border-danger"
+        <PasswordField
+          name="password"
+          label={t("login.password")}
+          autoComplete="current-password"
+          showLabel={t("form.showPassword")}
+          hideLabel={t("form.hidePassword")}
+          error={errors.password}
         />
-        {error && (
-          <p id="email-error" className="mt-2 text-sm text-danger">
-            {error}
-          </p>
-        )}
+        <Link href="/forgot-password" className="mt-2 inline-block text-sm font-medium text-accent underline-offset-4 hover:underline">
+          {t("login.forgot")}
+        </Link>
       </div>
       <button
         type="submit"

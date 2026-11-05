@@ -15,19 +15,20 @@ This spec covers **phase 1 only: the designer side + my admin (moderation) area*
 
 ## Verified, not vetted
 A designer's profile becomes **visible to employers** (phase 2) only when all of these are true. Each is objective; none is a judgment of quality.
-- Email confirmed (they logged in through the magic link at least once)
+- Email confirmed
 - Designer rules accepted
+- Profile basics filled in: full name, specialty, years of experience, product type, market, availability
 - Portfolio link present and in a valid format
 - At least one case study with a title and description
 - Account status is `active` (not hidden or removed by moderation)
 
-Until then, the editor shows a checklist of what's missing. No human review is needed to become visible. Admin moderation exists only for rule violations, fake profiles and reports.
+Until then, the editor shows a checklist of what's missing, and encourages the designer to add their first case study. No human review is needed to become visible. Admin moderation exists only for rule violations, fake profiles and reports.
 
 ## Stack
 - Next.js (App Router, TypeScript)
 - Supabase (Postgres, Auth, Storage, Row Level Security)
 - Tailwind CSS
-- Resend for emails (also used as Supabase Auth's SMTP, so login emails come from our domain)
+- Resend for emails (also used as Supabase Auth's SMTP, so confirmation and password-reset emails come from our domain)
 - Vercel (with Vercel Cron for the daily digest and cleanup)
 - zod for validation
 
@@ -48,6 +49,7 @@ Until then, the editor shows a checklist of what's missing. No human review is n
 - Collect the minimum. No ID numbers, addresses, dates of birth, or resume file uploads.
 - Portfolio and LinkedIn (optional) are stored as links, not files.
 - Designers manage their own profile content and can delete their account at any time; deletion removes all their data (including stored images).
+- Signup asks for email and password only. Everything else is added in the profile after signing in.
 - Phone is not collected at signup. Designers can add it in their profile if they want to; it is never shown publicly, and shown to employers only if they turn on "phone shown".
 - A clear privacy notice at signup (what's collected, why, who can see it, that it's voluntary, and how to request deletion).
 - Signups whose email is never confirmed are deleted automatically after 14 days.
@@ -69,17 +71,20 @@ Sections, top to bottom (copy below):
 9. Footer with a link to `/privacy` and a one-line "not an agency" statement, on every page
 
 ### 2. `/check-email`
-Shown after the signup form: "Check your email. We've sent you a link to sign in and start your profile. It may take a minute; check spam if you don't see it."
+Shown after the signup form: "Check your email. We've sent you a link to confirm your address. Then sign in and start your profile. It may take a minute; check spam if you don't see it."
 
 ### 3. `/privacy`
 Short privacy page (copy below).
 
-### 4. `/login`
-Email field only. Always responds "Check your email" (whether or not the account exists). Sends a magic link to existing, non-removed accounts.
+### 4. `/login`, `/forgot-password`, `/reset-password`
+- `/login`: email + password, a "Forgot your password?" link, and a link to sign up. Wrong email or password → one generic error ("Email or password is incorrect"), never saying which one.
+- `/forgot-password`: email field. Always responds "If there's an account for this email, we've sent a reset link."
+- `/reset-password`: reached from the reset email; set a new password, then go to the profile.
+- Unconfirmed email → "Please confirm your email first" with a "Resend confirmation" button.
 
 ### 5. Designer account
-- Login with Supabase magic link. Accounts with status `removed` cannot log in and see a short message with a contact email. Status `hidden` can log in and edit, but the profile isn't visible to employers, and the editor says why.
-- **First login: accept the designer rules** (`/rules`) before reaching the editor. Store `rules_accepted_at`. Designer rules:
+- Login with Supabase email + password. Accounts with status `removed` cannot log in and see a short message with a contact email. Status `hidden` can log in and edit, but the profile isn't visible to employers, and the editor says why.
+- **First login: accept the designer rules** (`/rules`) before reaching the editor. Store `rules_accepted_at`. The first rule replaces the old "own work" checkbox at signup. Designer rules:
   - My profile is honest, and all work shown is my own or clearly credited
   - I'll reply to companies that contact me, even if it's a no
   - I won't skip interviews I've scheduled without notice
@@ -90,7 +95,9 @@ Email field only. Always responds "Check your email" (whether or not the account
 - `/profile/edit` — profile editor:
   - **Visibility checklist** at the top (see "Verified, not vetted"): what's done and what's missing
   - Display name, headline (one line), short bio
-  - Specialty, years of experience, product type, market, platforms, industries (prefilled from signup, editable)
+  - Full name
+  - Specialty, years of experience, product type, market, platforms, industries
+  - The first time, the editor opens as a short guided setup (basics → portfolio link → first case study), then works as a normal editor
   - Availability: actively looking / open to offers / not looking
   - Confidential search toggle (hide name and photo from employers in phase 2)
   - Portfolio link; LinkedIn link (optional, not asked at signup)
@@ -103,7 +110,7 @@ Email field only. Always responds "Check your email" (whether or not the account
 - "Delete my account" with confirmation; deletes the designer, case studies and stored images.
 
 ### 6. Admin `/admin` (only `ADMIN_EMAIL`) — moderation, not review
-- **New this week** (main view): designers who signed up in the last 7 days, newest first, with confirmed / not confirmed and visible / not visible. For spotting spam and fake profiles, not for judging quality.
+- **New this week** (main view): designers who signed up in the last 7 days, newest first, with visible / not visible and what's missing. For spotting spam and fake profiles, not for judging quality.
 - **Reports**: open reports (phase 2 will fill this; in phase 1 the list exists and is empty).
 - **All designers** with filters: status, visible yes/no, specialty, product type, market, availability. Search by name or email.
 - **Designer detail**:
@@ -120,44 +127,37 @@ Email field only. Always responds "Check your email" (whether or not the account
 ## Signup form fields
 | Field | Label | Type | Required |
 |---|---|---|---|
-| full_name | Full name | text | yes |
 | email | Email | email | yes |
-| portfolio_url | Portfolio link | url | yes |
-| specialty | Specialty | select: Product design / UX/UI / Web design / Brand / Other | yes |
-| years_experience | Years of professional experience | select: 0-2 / 3-5 / 6-9 / 10+ | yes |
-| product_type | Product type | select: Desktop / Mobile / Both | yes |
-| market | Market | select: B2B / B2C / Both | yes |
-| platforms | Tools and platforms | multi-select chips: Figma, Framer, Webflow, Shopify, WordPress, Other | no |
-| industries | Industries you've worked in | free text | no |
-| availability | Job search status | select: Actively looking / Open to offers | yes |
-| confidential | My search is confidential (I'm currently employed) | checkbox | no |
-| own_work | All work in my portfolio is my own, or clearly credited | checkbox | yes |
+| password | Password | password (show/hide toggle) | yes, at least 10 characters |
 | consent | I've read the privacy policy and agree to my details being stored to use the platform | checkbox | yes |
 
-Validation with zod on client and server, error messages next to fields. Honeypot field + reject submissions faster than 3 seconds. Rate limit signups per IP (e.g. 5 per hour).
+The consent checkbox stays: it's the privacy notice at signup the privacy principles require. Everything else (name, specialty, portfolio, etc.) is added in the profile.
 
-On submit (server action):
-- **New email**: create the auth user and the `designers` row, send the magic link (email 1), redirect to `/check-email`.
-- **Email already has an account** (any status except `removed`): don't change the existing row; send a normal login link instead and redirect to `/check-email`. The page looks the same either way, so the form never reveals who has an account.
-- **Email belongs to a removed account**: don't create a new account; redirect to `/check-email` without sending anything. (I can see the attempt in the admin, see `signup_attempts`.)
+Validation with zod on client and server, error messages next to fields. Honeypot field + reject submissions faster than 3 seconds. Rate limit signups per IP (e.g. 5 per hour). Reject very common passwords (enable Supabase's leaked-password protection if available on the plan).
+
+On submit (server action), call Supabase `signUp` with email confirmation on, and store `consent_at` in the user's metadata. Then redirect to `/check-email`:
+- **New email**: Supabase sends the confirmation email (email 1).
+- **Email already has an account**: Supabase returns the same response without creating anything; the page looks the same, so the form never reveals who has an account.
+- **Email belongs to a removed account**: same as above; nothing is created, and they can't log in.
+
+**After confirming**: the confirmation link signs the designer in. On that first confirmed sign-in, create the `designers` row (email, consent, consent_at from metadata), send the welcome email (email 2), and go to `/rules`.
 
 ## Database
 
 ### `designers`
 - id uuid pk
-- user_id uuid references auth.users (set at signup)
+- user_id uuid references auth.users (the row is created on the first confirmed sign-in, so every row has a confirmed email)
 - created_at, updated_at (trigger)
-- email_confirmed_at timestamptz null (set on first successful magic-link login)
-- full_name, email (unique, lowercase), phone (null)
-- portfolio_url, linkedin_url (null; optional, added from the profile)
+- email (unique, lowercase)
+- full_name (null until filled in), phone (null)
+- portfolio_url (null until filled in), linkedin_url (null; optional)
 - display_name (null), headline (null), bio (null), photo_path (null)
-- specialty, years_experience, product_type, market
+- specialty, years_experience, product_type, market (null until filled in)
 - platforms text[] default '{}', industries text null
-- availability text — actively_looking / open_to_offers / not_looking
+- availability text null — actively_looking / open_to_offers / not_looking
 - confidential boolean default false
 - show_email boolean default false, show_phone boolean default false
 - salary_expectation int null (monthly gross ILS; optional)
-- own_work_confirmed boolean
 - consent boolean, consent_at timestamptz
 - rules_accepted_at timestamptz null
 - status text default 'active' — active / hidden / removed (admin-managed)
@@ -179,7 +179,7 @@ On submit (server action):
 - RLS: admin only
 
 ### `signup_attempts`
-- id uuid pk, email, ip_hash (hashed, never the raw IP), outcome (created / existing / removed / rejected_spam), created_at
+- id uuid pk, email, ip_hash (hashed, never the raw IP), outcome (submitted / rejected_spam / rate_limited), created_at
 - Used for rate limiting and spotting abuse. Rows older than 30 days are deleted by the daily cron.
 - RLS: admin only
 
@@ -202,8 +202,8 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 - **Designer metrics** (view), the mirror of employer metrics: response rate to contact requests, average response time, interview attendance rate (from `interview_reports`, excluding disputed reports until resolved)
 
 ### RLS
-- Public signup goes through a server action with the service role key; no direct anon inserts.
-- A designer can read and update only their own row (matching `user_id`), unless `status = 'removed'`. They cannot change `status`, `warnings`, `internal_notes`, `email`, `user_id`, `email_confirmed_at`, `consent_at` or `created_at`. `rules_accepted_at` can be set once, not cleared.
+- Signup goes through a server action (Supabase Auth); the `designers` row is created by server code with the service role key on the first confirmed sign-in. No direct anon inserts.
+- A designer can read and update only their own row (matching `user_id`), unless `status = 'removed'`. They cannot change `status`, `warnings`, `internal_notes`, `email`, `user_id`, `consent_at` or `created_at`. `rules_accepted_at` can be set once, not cleared.
 - Case studies: owner read/write only.
 - `moderation_log`, `signup_attempts`: admin read only; writes from server code.
 - Admin (email equals the configured admin email via `auth.jwt() ->> 'email'`) can read and update everything; also check server-side.
@@ -218,17 +218,19 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 - Other
 
 ## Emails (Resend, all in English)
-1. **Sign-in link** (to designer; sent by Supabase Auth through Resend SMTP): "Sign in to [Product name]", one button, expires per Supabase settings. Same template for new and returning users.
-2. **Welcome** (to designer, after their first successful login): what to do next (accept the rules, fill in the profile, add a case study), and what "visible" means.
+1. **Auth emails** (to designer; sent by Supabase Auth through Resend SMTP, templates customised to match the site):
+   - Confirm your email: "Confirm your email for [Product name]", one button
+   - Reset your password: one button, expires per Supabase settings
+2. **Welcome** (to designer, after their first confirmed sign-in): what to do next (accept the rules, fill in the basics, add a portfolio link and a first case study), and what "visible" means.
 3. **Moderation notice** (to designer): sent only when I click "Send" in the moderation preview, never automatically. Default templates per action:
    - Warn: which rule, my note, what happens if it repeats
    - Hide: why the profile is hidden and exactly what to fix to make it visible again
    - Remove: why, and how to contact us
    - Restore: the profile is visible again
    - Reply-to set to `ADMIN_EMAIL`.
-4. **Daily digest** (to `ADMIN_EMAIL`, Vercel Cron, 08:00 Israel time): new signups in the last 24 hours (confirmed / not confirmed), open reports, link to admin. Skip if both are zero.
+4. **Daily digest** (to `ADMIN_EMAIL`, Vercel Cron, 08:00 Israel time): new confirmed signups in the last 24 hours, open reports, link to admin. Skip if both are zero.
 
-The same daily cron also deletes unconfirmed signups older than 14 days (with their storage folder, if any) and `signup_attempts` older than 30 days.
+The same daily cron also deletes unconfirmed auth users older than 14 days (they have no `designers` row yet) and `signup_attempts` older than 30 days.
 
 ## Environment variables
 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, EMAIL_FROM, ADMIN_EMAIL, CRON_SECRET, NEXT_PUBLIC_SITE_URL. Add `.env.example` without real values.
@@ -258,8 +260,8 @@ Product name not decided: placeholder `[Product name]` in one constant.
 - Note under the companies column: Companies join after the designer community is in place.
 
 **How it works**
-1. Create your profile with a link to your portfolio
-2. Add at least one case study, and your profile is ready to be found
+1. Sign up with your email
+2. Fill in your profile and add at least one case study, and you're ready to be found
 3. When companies join, they search and reach out. You decide who to talk to.
 
 **Not a hiring agency**
@@ -277,7 +279,7 @@ We're starting small: first we're building the designer community, and companies
 Joining doesn't guarantee a job. Companies on the platform search and reach out to designers themselves. What we do guarantee: the same rules for both sides, and consequences for anyone who breaks them.
 
 **Privacy page**
-- What we store: the details you entered when signing up, a link to your portfolio (and LinkedIn, if you add it), and the content you add to your profile.
+- What we store: your email, and the details and work you add to your profile, including a link to your portfolio (and LinkedIn, if you add it).
 - Why: to show your profile to companies on the platform, and to keep the platform safe (for example, removing fake profiles).
 - Who sees it: our team, for moderation only. Once companies join, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to. Your reliability record (response and attendance) is visible to registered companies.
 - Providing your details is voluntary.
@@ -315,9 +317,9 @@ So the schema and naming fit what's coming:
 1. Setup: Next.js, Tailwind, next-intl (en only, RTL-ready), font, message file. *(done)*
 2. Supabase schema + triggers + RLS + storage bucket (SQL migration files), including empty phase 2 tables. *(done for the vetted model; update for this spec)*
 3. Landing page, `/privacy`, `/check-email`, `/login`. *(landing and privacy done for the vetted model; update copy)*
-4. Signup form + server action + validation + spam protection + rate limit + account creation + sign-in link.
-5. Resend as Supabase SMTP; emails 1 and 2.
-6. Designer rules page on first login, then profile editor with visibility checklist, case studies, photo upload, preview.
+4. Signup (email + password + consent) + server action + validation + spam protection + rate limit; login, forgot and reset password; first-sign-in row creation.
+5. Resend as Supabase SMTP with custom auth templates; emails 1 and 2.
+6. Designer rules page on first login, then the guided first setup and profile editor with visibility checklist, case studies, photo upload, preview.
 7. Account deletion.
 8. Admin: new this week, all designers, detail, moderation actions + log + moderation email preview.
 9. Daily cron: digest + cleanup of unconfirmed signups and old signup attempts.
@@ -327,8 +329,10 @@ So the schema and naming fit what's coming:
 - [ ] Renders correctly on mobile and desktop
 - [ ] Adding a Hebrew version later requires only a new message file (`he.json`), no code changes, and the layout flips correctly to RTL
 - [ ] Hebrew text entered by users (names, bios, case studies) displays in the right direction everywhere, including the admin
-- [ ] Signup creates the account, sends the sign-in link, and shows `/check-email`
-- [ ] Signing up with an existing email sends a login link and shows the same `/check-email` page (no account enumeration)
+- [ ] Signup asks only for email, password and consent; it sends the confirmation email and shows `/check-email`
+- [ ] Signing up with an existing email shows the same `/check-email` page and creates nothing (no account enumeration)
+- [ ] Login errors never reveal whether the email exists; forgot-password always gives the same answer
+- [ ] Confirming the email signs the designer in, creates their `designers` row, sends the welcome email and opens `/rules`
 - [ ] A removed account cannot sign up again or log in
 - [ ] Invalid URLs show clear errors; honeypot, 3-second check and rate limit block spam
 - [ ] Anonymous users cannot read any table (verify with the anon key)
@@ -339,7 +343,7 @@ So the schema and naming fit what's coming:
 - [ ] Hiding a profile makes it not visible; removing an account blocks login; both are logged in `moderation_log`
 - [ ] Moderation emails are sent only when I click "Send"
 - [ ] Deleting an account removes the row, case studies and stored images
-- [ ] Unconfirmed signups older than 14 days are deleted by the cron
+- [ ] Unconfirmed auth users older than 14 days are deleted by the cron
 - [ ] Cron route rejects requests without `CRON_SECRET`, and the digest is sent only when there's something to report
 - [ ] No feature anywhere suggests or recommends designers to anyone
 

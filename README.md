@@ -10,12 +10,12 @@ straight away, with no approval step (see the spec).
 
 | Stage | Spec build steps | State |
 |---|---|---|
-| A | 1–3: setup, database, landing, `/privacy`, `/check-email`, `/login` | Done |
-| B | 4–5: signup submission, sign-in link, welcome email | Next |
+| A | 1–3: setup, database, landing, `/privacy`, `/check-email`, `/login`, `/forgot-password` | Done |
+| B | 4–5: email + password signup, login, password reset, welcome email | Next |
 | C | 6–7: rules, profile editor, visibility checklist, case studies, deletion | — |
 | D | 8–10: admin moderation, daily cron, deploy docs | — |
 
-The signup and login forms validate in the browser today; submitting them is wired up in stage B.
+The signup, login and forgot-password forms validate in the browser today; submitting them is wired up in stage B.
 
 ## Run locally
 

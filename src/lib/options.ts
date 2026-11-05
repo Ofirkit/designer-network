@@ -7,10 +7,7 @@ export const PRODUCT_TYPES = ["desktop", "mobile", "both"] as const;
 export const MARKETS = ["b2b", "b2c", "both"] as const;
 export const PLATFORMS = ["figma", "framer", "webflow", "shopify", "wordpress", "other"] as const;
 
-// The signup form offers only the first two; "not_looking" is set later
-// from the profile editor.
 export const AVAILABILITY = ["actively_looking", "open_to_offers", "not_looking"] as const;
-export const APPLICATION_AVAILABILITY = ["actively_looking", "open_to_offers"] as const;
 
 export const MODERATION_REASONS = [
   "fake_profile",

@@ -63,8 +63,8 @@
   "howItWorks": {
     "title": "How it works",
     "steps": {
-      "profile": "Create your profile with a link to your portfolio",
-      "caseStudy": "Add at least one case study, and your profile is ready to be found",
+      "profile": "Sign up with your email",
+      "caseStudy": "Fill in your profile and add at least one case study, and you're ready to be found",
       "found": "When companies join, they search and reach out. You decide who to talk to."
     }
   },
@@ -83,7 +83,7 @@
   },
   "form": {
     "title": "Create your profile",
-    "intro": "It takes about three minutes. We'll email you a link to sign in and finish your profile.",
+    "intro": "Just an email and a password. You'll add your work and details after you sign in.",
     "optional": "optional",
     "required": "required",
     "groups": {
@@ -106,8 +106,9 @@
       "industriesHint": "For example: fintech, health, e-commerce",
       "availability": "Job search status",
       "confidential": "My search is confidential (I'm currently employed)",
-      "own_work": "All work in my portfolio is my own, or clearly credited",
-      "consent": "I've read the <link>privacy policy</link> and agree to my details being stored to use the platform"
+      "consent": "I've read the <link>privacy policy</link> and agree to my details being stored to use the platform",
+      "password": "Password",
+      "passwordHint": "At least {min} characters."
     },
     "select": "Select",
     "goodToKnowTitle": "Good to know",
@@ -125,26 +126,44 @@
       "mustAccept": "Please confirm to continue.",
       "tooFast": "That was quick. Please take a moment and try again.",
       "generic": "Something went wrong. Please try again.",
-      "rateLimited": "Too many attempts. Please try again in an hour."
-    }
+      "rateLimited": "Too many attempts. Please try again in an hour.",
+      "passwordTooShort": "Use at least {min} characters."
+    },
+    "showPassword": "Show",
+    "hidePassword": "Hide",
+    "haveAccount": "Already have a profile? <link>Log in</link>"
   },
   "privacyNotice": {
     "title": "Your privacy",
-    "body": "We collect only what's needed for your profile: the details in this form and links to your work. Our team sees them for moderation only. Providing them is voluntary, and you can delete your account at any time.",
+    "body": "At signup we ask only for your email. Everything else you add to your profile yourself. Our team sees it for moderation only, and you can delete your account at any time.",
     "link": "Read the privacy policy"
   },
   "checkEmail": {
     "title": "Check your email.",
-    "body": "We've sent you a link to sign in and start your profile. It may take a minute; check spam if you don't see it.",
+    "body": "We've sent you a link to confirm your address. Then sign in and start your profile. It may take a minute; check spam if you don't see it.",
     "back": "Back to the homepage"
   },
   "login": {
     "title": "Log in",
-    "intro": "Enter your email and we'll send you a link to sign in.",
+    "intro": "Welcome back.",
     "email": "Email",
-    "submit": "Send me a link",
+    "password": "Password",
+    "forgot": "Forgot your password?",
+    "submit": "Log in",
     "noAccount": "No profile yet? <link>Create one</link>",
+    "wrongCredentials": "Email or password is incorrect.",
+    "notConfirmed": "Please confirm your email first.",
+    "resendConfirmation": "Resend confirmation email",
+    "removed": "This account has been removed. If you think this is a mistake, contact us at {email}.",
     "notConnected": "Login isn't connected yet. It will work in a later build stage."
+  },
+  "forgotPassword": {
+    "title": "Reset your password",
+    "intro": "Enter your email and we'll send you a link to set a new password.",
+    "submit": "Send reset link",
+    "sent": "If there's an account for this email, we've sent a reset link.",
+    "back": "Back to log in",
+    "notConnected": "Password reset isn't connected yet. It will work in a later build stage."
   },
   "privacy": {
     "title": "Privacy",
@@ -152,7 +171,7 @@
     "sections": {
       "what": {
         "title": "What we store",
-        "body": "The details you entered when signing up, a link to your portfolio (and LinkedIn, if you add it), and the content you add to your profile."
+        "body": "Your email, and the details and work you add to your profile, including a link to your portfolio (and LinkedIn, if you add it)."
       },
       "why": {
         "title": "Why",

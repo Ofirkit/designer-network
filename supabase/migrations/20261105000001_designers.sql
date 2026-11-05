@@ -1,5 +1,7 @@
 -- Phase 1: designers, case studies, moderation log, signup attempts.
--- Open model: designers sign up and build a profile straight away.
+-- Open model: designers sign up with email + password and build a profile
+-- after signing in. The designers row is created on the first confirmed
+-- sign-in, so every row has a confirmed email; profile fields start empty.
 -- A profile is visible to employers (phase 2) only when objective conditions
 -- are met (see public.designer_visibility). Nobody judges quality.
 --
@@ -61,37 +63,35 @@ create table public.designers (
   user_id            uuid unique references auth.users (id) on delete set null,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  -- Set on the first successful magic-link login.
-  email_confirmed_at timestamptz,
 
-  full_name          text not null check (char_length(full_name) between 2 and 120),
+  -- Profile fields: empty until the designer fills them in.
+  full_name          text check (full_name is null or char_length(full_name) between 2 and 120),
   email              text not null unique check (email = lower(email)),
   phone              text check (phone is null or char_length(phone) <= 30),
   -- Optional; not asked at signup, can be added in the profile.
   linkedin_url       text check (linkedin_url is null or char_length(linkedin_url) <= 500),
-  portfolio_url      text not null check (char_length(portfolio_url) <= 500),
+  portfolio_url      text check (portfolio_url is null or char_length(portfolio_url) <= 500),
 
   display_name       text check (display_name is null or char_length(display_name) <= 120),
   headline           text check (headline is null or char_length(headline) <= 140),
   bio                text check (bio is null or char_length(bio) <= 2000),
   photo_path         text,
 
-  specialty          text not null check (specialty in ('product_design', 'ux_ui', 'web_design', 'brand', 'other')),
-  years_experience   text not null check (years_experience in ('0-2', '3-5', '6-9', '10+')),
-  product_type       text not null check (product_type in ('desktop', 'mobile', 'both')),
-  market             text not null check (market in ('b2b', 'b2c', 'both')),
+  specialty          text check (specialty in ('product_design', 'ux_ui', 'web_design', 'brand', 'other')),
+  years_experience   text check (years_experience in ('0-2', '3-5', '6-9', '10+')),
+  product_type       text check (product_type in ('desktop', 'mobile', 'both')),
+  market             text check (market in ('b2b', 'b2c', 'both')),
   platforms          text[] not null default '{}'
                      check (platforms <@ array['figma', 'framer', 'webflow', 'shopify', 'wordpress', 'other']),
   industries         text check (industries is null or char_length(industries) <= 300),
 
-  availability       text not null check (availability in ('actively_looking', 'open_to_offers', 'not_looking')),
+  availability       text check (availability in ('actively_looking', 'open_to_offers', 'not_looking')),
   confidential       boolean not null default false,
   show_email         boolean not null default false,
   show_phone         boolean not null default false,
   -- Optional, monthly gross ILS. Never public; for registered companies in phase 2.
   salary_expectation int check (salary_expectation is null or salary_expectation >= 0),
 
-  own_work_confirmed boolean not null check (own_work_confirmed),
   consent            boolean not null check (consent),
   consent_at         timestamptz not null default now(),
   rules_accepted_at  timestamptz,
@@ -104,8 +104,6 @@ create table public.designers (
 
 create index designers_created_idx on public.designers (created_at desc);
 create index designers_status_idx on public.designers (status);
--- For the daily cleanup of unconfirmed signups.
-create index designers_unconfirmed_idx on public.designers (created_at) where email_confirmed_at is null;
 
 create trigger designers_set_updated_at
   before update on public.designers
@@ -125,7 +123,6 @@ begin
     or new.internal_notes     is distinct from old.internal_notes
     or new.user_id            is distinct from old.user_id
     or new.email              is distinct from old.email
-    or new.email_confirmed_at is distinct from old.email_confirmed_at
     or new.consent_at         is distinct from old.consent_at
     or new.created_at         is distinct from old.created_at
     then
@@ -237,15 +234,17 @@ create policy "case_studies: admin reads all"
 -- Visibility: "verified, not vetted"
 -- ---------------------------------------------------------------------------
 -- A profile is visible to employers only when every objective condition is
--- met. `missing` lists what's left, for the checklist in the editor.
+-- met. (Email confirmation is implied: rows exist only after it.) `missing` lists what's left, for the checklist in the editor.
 -- security_invoker: callers only see rows RLS already lets them see.
 create view public.designer_visibility
 with (security_invoker = true) as
 select
   d.id as designer_id,
   array_remove(array[
-    case when d.email_confirmed_at is null then 'email_confirmed' end,
     case when d.rules_accepted_at is null then 'rules_accepted' end,
+    case when d.full_name is null or d.specialty is null or d.years_experience is null
+           or d.product_type is null or d.market is null or d.availability is null
+         then 'profile_basics' end,
     case when coalesce(d.portfolio_url, '') = '' then 'portfolio_url' end,
     case when not exists (
       select 1 from public.case_studies c
@@ -256,8 +255,9 @@ select
     case when d.status <> 'active' then 'status_active' end
   ], null) as missing,
   (
-    d.email_confirmed_at is not null
-    and d.rules_accepted_at is not null
+    d.rules_accepted_at is not null
+    and d.full_name is not null and d.specialty is not null and d.years_experience is not null
+    and d.product_type is not null and d.market is not null and d.availability is not null
     and coalesce(d.portfolio_url, '') <> ''
     and d.status = 'active'
     and exists (
@@ -299,7 +299,7 @@ create table public.signup_attempts (
   id         uuid primary key default gen_random_uuid(),
   email      text not null,
   ip_hash    text not null,
-  outcome    text not null check (outcome in ('created', 'existing', 'removed', 'rejected_spam')),
+  outcome    text not null check (outcome in ('submitted', 'rejected_spam', 'rate_limited')),
   created_at timestamptz not null default now()
 );
 
