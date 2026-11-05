@@ -202,6 +202,7 @@ NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_K
 Product name not decided: placeholder `[Product name]` in one constant.
 
 **Hero**
+- Eyebrow (small line above the headline): An exclusive community of designers in Israel
 - Headline: Hiring is broken. On both sides.
 - Subheadline: Designers get ghosted. Companies drown in applications they can't judge. [Product name] fixes hiring at the root: designers vetted by designers, a clear process and timeline for every role, and accountability on both sides.
 - CTA: Apply to join
