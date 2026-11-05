@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "{product} — a closed platform for vetted designers",
-    "description": "A closed platform for designers vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason."
+    "title": "{product} — an exclusive community of vetted designers",
+    "description": "An exclusive community of designers, vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason."
   },
   "nav": {
     "apply": "Apply",
@@ -10,7 +10,7 @@
   "hero": {
     "eyebrow": "For designers in Israel",
     "headline": "Your next design role. Without the black hole.",
-    "subheadline": "A closed platform for designers vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason.",
+    "subheadline": "An exclusive community of designers, vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason.",
     "cta": "Apply to join"
   },
   "benefits": {
@@ -33,7 +33,7 @@
   "notAgency": {
     "title": "Not a hiring agency",
     "lead": "We don't place, introduce or recommend candidates.",
-    "body": "This is a closed platform where vetted designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept."
+    "body": "This is an exclusive community of vetted designers, where designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept."
   },
   "audience": {
     "title": "Who it's for",

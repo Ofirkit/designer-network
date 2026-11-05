@@ -19,6 +19,7 @@ This spec covers **phase 1 only: the designer side + my admin area**. Design the
 - zod for validation
 
 ## Voice
+Publicly, the product is "an exclusive community" of vetted designers, never "a closed platform". (Internally and legally it still works like a closed job board; see Context.)
 Public copy speaks as "we" (a team of reviewers), never "I". This applies to the site and to emails 1 and 3.
 
 ## Language and layout
@@ -200,7 +201,7 @@ Product name not decided: placeholder `[Product name]` in one constant.
 
 **Hero**
 - Headline: Your next design role. Without the black hole.
-- Subheadline: A closed platform for designers vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason.
+- Subheadline: An exclusive community of designers, vetted by designers. Companies here commit to clear rules: every candidate gets an answer, with a reason.
 - CTA: Apply to join
 
 **What you get**
@@ -216,7 +217,7 @@ Product name not decided: placeholder `[Product name]` in one constant.
 
 **Not a hiring agency**
 - Lead: We don't place, introduce or recommend candidates.
-- Body: This is a closed platform where vetted designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept.
+- Body: This is an exclusive community of vetted designers, where designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept.
 - Footer line (every page): Not a recruitment or placement agency. Designers and companies find each other directly.
 
 **Who it's for**
