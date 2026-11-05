@@ -149,17 +149,18 @@ create table public.messages (
 create index messages_thread_idx on public.messages (employer_id, designer_id, created_at);
 
 -- Reviews go both ways (designer -> company, company -> designer), and only
--- after a real interaction. A review is tied to one application or one
--- contact request, and is made of category scores. The interaction decides
--- which categories can be rated:
+-- once the hiring process reached an advanced step (an interview). Early
+-- conversations aren't rated, so nobody is asked to rate every interaction.
+-- A review is tied to one application or one contact request, and is made of
+-- category scores. How far the process went decides which categories:
 --
 --   category (designer -> company) | category (company -> designer) | unlocked by
---   communication                  | communication                  | a conversation (messages both ways) or an interview
+--   communication                  | communication                  | an interview
 --   respect                        | professionalism                | an interview
 --   process_as_described           | work_as_presented              | an interview
---   closure                        | follow_through                 | a final outcome, after a conversation or interview
+--   closure                        | follow_through                 | a final outcome, after an interview
 --
--- No interaction, no review. One review per side per interaction; the
+-- No interview, no review. One review per side per interaction; the
 -- reviewed side can respond once.
 create table public.reviews (
   id                 uuid primary key default gen_random_uuid(),
@@ -207,7 +208,6 @@ set search_path = ''
 as $$
 declare
   belongs          boolean := false;
-  has_conversation boolean;
   has_interview    boolean := false;
   has_outcome      boolean := false;
   result           text[] := '{}';
@@ -239,21 +239,14 @@ begin
     return '{}';
   end if;
 
-  has_conversation :=
-    exists (select 1 from public.messages m
-            where m.employer_id = p_employer_id and m.designer_id = p_designer_id and m.sender = 'employer')
-    and exists (select 1 from public.messages m
-            where m.employer_id = p_employer_id and m.designer_id = p_designer_id and m.sender = 'designer');
+  if not coalesce(has_interview, false) then
+    return '{}';
+  end if;
 
-  if has_conversation or has_interview then
-    result := result || 'communication'::text;
-  end if;
-  if has_interview then
-    result := result || case when p_reviewer_type = 'designer'
-                             then array['respect', 'process_as_described']
-                             else array['professionalism', 'work_as_presented'] end;
-  end if;
-  if has_outcome and (has_conversation or has_interview) then
+  result := case when p_reviewer_type = 'designer'
+                 then array['communication', 'respect', 'process_as_described']
+                 else array['communication', 'professionalism', 'work_as_presented'] end;
+  if has_outcome then
     result := result || case when p_reviewer_type = 'designer' then 'closure' else 'follow_through' end;
   end if;
   return result;
@@ -270,7 +263,7 @@ as $$
 begin
   if cardinality(public.review_unlocked_categories(new.reviewer_type, new.employer_id, new.designer_id,
                                                    new.application_id, new.contact_request_id)) = 0 then
-    raise exception 'A review is only allowed after a real interaction'
+    raise exception 'A review is only allowed once the process reached an interview'
       using errcode = '42501';
   end if;
   return new;

@@ -196,7 +196,7 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 - `interview_reports`: application_id or contact_request_id, scheduled_at, reported_by (employer), outcome (attended / no_show / rescheduled_with_notice), designer_response text null (designer can respond), disputed boolean default false, created_at
 - `hire_confirmations`: job_id, designer_id, reported_by (employer / designer), confirmed_by_other boolean, created_at
 - `reviews` (both directions): reviewer_type (designer / employer), employer_id, designer_id, application_id or contact_request_id (exactly one: the interaction the review is about), comment, response (from the reviewed side), responded_at, created_at. One review per side per interaction.
-- `review_scores`: review_id, category, score 1–5. Database triggers reject a review with no interaction, and any category the interaction didn't unlock (see "Ratings" in Phase 2 rules).
+- `review_scores`: review_id, category, score 1–5. Database triggers reject a review before an interview, and any category the interaction didn't unlock (see "Ratings" in Phase 2 rules).
 - `reports`: reporter type and id, reported type and id, reason, details, status (open / resolved), created_at
 - `messages`: thread between employer and designer (job_id null), sender, body, created_at
 - **Employer metrics** (view): answer rate, average response time, average actual process length vs. declared, average score per category and number of reviews from designers
@@ -302,17 +302,16 @@ So the schema and naming fit what's coming:
   - Employers: answer rate, response time, actual vs. declared process length. Employers can respond to reviews.
   - Designers: response rate to contact requests, response time, interview attendance. A designer can respond to a no-show report; disputed reports don't count until resolved.
   - New accounts on either side show "New on the platform" until there's enough data.
-- **Ratings go both ways, and only after a real interaction.** No interaction, no rating: a company that never answers an application can't be rated, but its answer rate shows it.
+- **Ratings go both ways, and only once the process reaches an advanced step (an interview).** Early conversations aren't rated, so nobody has to rate every interaction. A company that never answers, or someone who disappears mid-conversation, shows up in the objective track record instead.
   - A rating is about one application or one contact request, and is made of category scores (1–5 each, any can be skipped), plus one optional comment.
-  - The interaction decides which categories can be rated:
+  - The app asks for a rating only at these points (after an interview, and after a final outcome). Rating is always optional.
+  - How far the process went decides which categories can be rated:
 
     | Unlocked by | Designer rates company | Company rates designer |
     |---|---|---|
-    | A conversation (messages both ways) or an interview | Communication | Communication |
-    | An interview | Respect; Process as described | Professionalism; Work as presented |
-    | A final outcome (offer, hire, no, withdrawn), after a conversation or interview | Closure | Follow-through |
+    | An interview | Communication; Respect; Process as described | Communication; Professionalism; Work as presented |
+    | A final outcome (offer, hire, no, withdrawn) after an interview | Closure | Follow-through |
 
-    Example: an employer who left mid-conversation can be rated only on Communication.
   - Categories are shown separately, never merged into one overall score.
   - A review must include at least one score (checked in the app).
   - One review per side per interaction. The rated side can respond once, publicly.
