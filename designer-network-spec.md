@@ -161,7 +161,7 @@ One row per decline email sent, so earlier declines remain visible when someone 
 Create only the tables below as empty structures (no UI, no API), so the schema is ready. Field notes reflect decisions already made (see "Phase 2 rules, for reference"):
 - `employers`: company_name, website, contact_name, email, verified boolean, rules_accepted_at, status (active / warned / removed), warnings int, is_founding boolean, created_at
 - `access_passes`: employer_id, type (hiring_round / extension / founding_lifetime / subscription), starts_at, ends_at (null for lifetime), amount_ils, paid_at
-- `jobs`: employer_id, title, description, specialty, product_type, market, seniority, stages jsonb (ordered list), expected_length_weeks (required), budget_min and budget_max (required; visible only to logged-in approved designers, never to visitors), assignment_hours null, assignment_paid boolean, status (open / closed), outcome (hired / not_hired / cancelled, required to close), hired_designer_id null, opened_at, closed_at
+- `jobs`: employer_id, title, description, specialty, product_type, market, seniority, stages jsonb (ordered list), expected_length_weeks (required), budget_min and budget_max (optional, both or neither; visible only to logged-in approved designers, never to visitors), assignment_hours null, assignment_paid boolean, status (open / closed), outcome (hired / not_hired / cancelled, required to close), hired_designer_id null, opened_at, closed_at
 - `applications`: job_id, designer_id, status (sent / viewed / in_review / interview / offer / hired / not_a_fit / withdrawn), status timestamps, response_due_at, rejection_reason (from the professional list), rejection_note, created_at
 - `hire_confirmations`: job_id, designer_id, reported_by (employer / designer), confirmed_by_other boolean, created_at
 - `employer_reviews`: employer_id, designer_id, job_id, rating, comment, employer_response, created_at
@@ -201,7 +201,7 @@ Product name not decided: placeholder `[Product name]` in one constant.
 
 **Hero**
 - Headline: Hiring is broken. On both sides.
-- Subheadline: Designers get ghosted. Companies drown in applications they can't judge. [Product name] fixes hiring at the root: designers vetted by designers, no hidden budgets or endless interview rounds, and accountability on both sides.
+- Subheadline: Designers get ghosted. Companies drown in applications they can't judge. [Product name] fixes hiring at the root: designers vetted by designers, a clear process and timeline for every role, and accountability on both sides.
 - CTA: Apply to join
 
 **What you get**
@@ -239,7 +239,8 @@ Joining doesn't guarantee a job. Companies on the platform search and reach out 
 ## Phase 2 rules, for reference (do not build yet)
 So the schema and naming fit what's coming:
 - **Employers pay for access, never per hire.** Main product: a hiring round pass (~60 days, extendable by 30). Founding lifetime offer for the first 10–20 companies only. Subscription later.
-- **Every role must state:** stages, expected process length, a budget range, and assignment terms. The budget range is visible only to logged-in approved designers, never to unregistered visitors.
+- **Every role must state:** stages, expected process length, and assignment terms.
+- **Budget range: optional but encouraged.** Roles that share one get a "Budget shared" label, and designers can filter by it. The budget range is visible only to logged-in approved designers, never to unregistered visitors.
 - **Employers must:** answer every applicant within a set time, with a reason from a professional-only list (experience, portfolio fit, product type, seniority, budget, other) plus an optional professional note. No personal reasons.
 - **Employer rating** is built mainly from objective data (answer rate, response time, actual vs. declared process length). New employers show "New on the platform". Employers can respond to reviews. Repeated violations: warning, then removal.
 - **Success** = a signed contract, reported in the platform: closing a role requires an outcome; the designer can also report a hire and earns a "Hired through the platform" badge; the other side is asked to confirm.

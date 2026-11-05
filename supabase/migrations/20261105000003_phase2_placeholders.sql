@@ -43,9 +43,10 @@ create table public.jobs (
   seniority             text,
   stages                jsonb not null default '[]'::jsonb check (jsonb_typeof(stages) = 'array'),
   expected_length_weeks int not null check (expected_length_weeks > 0),
+  -- Optional but encouraged ("Budget shared" label). Both or neither.
   -- Visible only to logged-in approved designers, never to visitors.
-  budget_min            int not null check (budget_min >= 0),
-  budget_max            int not null,
+  budget_min            int check (budget_min is null or budget_min >= 0),
+  budget_max            int,
   assignment_hours      int check (assignment_hours is null or assignment_hours >= 0),
   assignment_paid       boolean not null default false,
   status                text not null default 'open' check (status in ('open', 'closed')),
@@ -53,7 +54,8 @@ create table public.jobs (
   hired_designer_id     uuid references public.designers (id) on delete set null,
   opened_at             timestamptz not null default now(),
   closed_at             timestamptz,
-  check (budget_max >= budget_min),
+  check ((budget_min is null) = (budget_max is null)),
+  check (budget_max is null or budget_max >= budget_min),
   -- Closing a role requires an outcome.
   check (status = 'open' or (outcome is not null and closed_at is not null))
 );
