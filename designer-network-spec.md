@@ -90,7 +90,7 @@ Short privacy page (copy below).
   - I won't skip interviews I've scheduled without notice
   - I'll update my status when I accept another offer
   - Role and assignment details I receive stay inside the platform
-  - I understand my reliability record (response and attendance) is visible to companies
+  - I understand my reliability record (response and attendance), and ratings from companies I've interacted with, are visible to companies
   - Repeated violations lead to a warning, then removal
 - `/profile/edit` — profile editor:
   - **Visibility checklist** at the top (see "Verified, not vetted"): what's done and what's missing
@@ -195,11 +195,11 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 - `contact_requests`: employer reaches out to a designer directly (not through a job application): employer_id, designer_id, job_id null, sent_at, response_due_at, responded_at null, response (interested / not_interested) null
 - `interview_reports`: application_id or contact_request_id, scheduled_at, reported_by (employer), outcome (attended / no_show / rescheduled_with_notice), designer_response text null (designer can respond), disputed boolean default false, created_at
 - `hire_confirmations`: job_id, designer_id, reported_by (employer / designer), confirmed_by_other boolean, created_at
-- `employer_reviews`: employer_id, designer_id, job_id, rating, comment, employer_response, created_at
+- `reviews` (both directions): reviewer_type (designer / employer), employer_id, designer_id, application_id or contact_request_id (exactly one: the interaction the review is about), rating 1–5, comment, response (from the reviewed side), responded_at, created_at. One review per side per interaction. A database trigger rejects any review that isn't allowed (see "Ratings" in Phase 2 rules).
 - `reports`: reporter type and id, reported type and id, reason, details, status (open / resolved), created_at
 - `messages`: thread between employer and designer (job_id null), sender, body, created_at
-- **Employer metrics** (view): answer rate, average response time, average actual process length vs. declared
-- **Designer metrics** (view), the mirror of employer metrics: response rate to contact requests, average response time, interview attendance rate (from `interview_reports`, excluding disputed reports until resolved)
+- **Employer metrics** (view): answer rate, average response time, average actual process length vs. declared, average rating and number of reviews from designers
+- **Designer metrics** (view), the mirror of employer metrics: response rate to contact requests, average response time, interview attendance rate (from `interview_reports`, excluding disputed reports until resolved), average rating and number of reviews from companies
 
 ### RLS
 - Signup goes through a server action (Supabase Auth); the `designers` row is created by server code with the service role key on the first confirmed sign-in. No direct anon inserts.
@@ -281,7 +281,7 @@ Joining doesn't guarantee a job. Companies on the platform search and reach out 
 **Privacy page**
 - What we store: your email, and the details and work you add to your profile, including a link to your portfolio (and LinkedIn, if you add it).
 - Why: to show your profile to companies on the platform, and to keep the platform safe (for example, removing fake profiles).
-- Who sees it: our team, for moderation only. Once companies join, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to. Your reliability record (response and attendance) is visible to registered companies.
+- Who sees it: our team, for moderation only. Once companies join, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to. Your reliability record (response and attendance), and ratings from companies you've interacted with, are visible to registered companies.
 - Providing your details is voluntary.
 - You can view, correct or delete your data at any time, from your profile or by email.
 - If you sign up but never confirm your email, we delete your details after 14 days.
@@ -301,6 +301,13 @@ So the schema and naming fit what's coming:
   - Employers: answer rate, response time, actual vs. declared process length. Employers can respond to reviews.
   - Designers: response rate to contact requests, response time, interview attendance. A designer can respond to a no-show report; disputed reports don't count until resolved.
   - New accounts on either side show "New on the platform" until there's enough data.
+- **Ratings go both ways, and only after a real interaction.** A designer can rate a company, and a company can rate a designer, only about a specific application or contact request where:
+  1. an interview happened, or
+  2. both sides exchanged messages, or
+  3. the other side missed its response deadline (a designer can rate a company that didn't answer their application in time; a company can rate a designer who didn't answer its contact request in time).
+  - One rating (1–5) and an optional comment per side per interaction. The rated side can respond once, publicly.
+  - Ratings are about professional conduct. Personal remarks can be reported and removed.
+  - Ratings are secondary to the objective track record and are shown next to it, never instead of it.
   - Repeated violations on either side: warning, then removal.
 - **Success** = a signed contract, reported in the platform: closing a role requires an outcome; the designer can also report a hire and earns a "Hired through the platform" badge; the other side is asked to confirm.
 - If an employer finds no relevant candidates, access is extended for free.

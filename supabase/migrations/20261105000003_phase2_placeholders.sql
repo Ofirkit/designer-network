@@ -124,17 +124,6 @@ create table public.hire_confirmations (
   created_at         timestamptz not null default now()
 );
 
-create table public.employer_reviews (
-  id                uuid primary key default gen_random_uuid(),
-  employer_id       uuid not null references public.employers (id) on delete cascade,
-  designer_id       uuid references public.designers (id) on delete set null,
-  job_id            uuid references public.jobs (id) on delete set null,
-  rating            int not null check (rating between 1 and 5),
-  comment           text,
-  employer_response text,
-  created_at        timestamptz not null default now()
-);
-
 create table public.reports (
   id            uuid primary key default gen_random_uuid(),
   reporter_type text not null check (reporter_type in ('employer', 'designer')),
@@ -159,6 +148,119 @@ create table public.messages (
 
 create index messages_thread_idx on public.messages (employer_id, designer_id, created_at);
 
+-- Reviews go both ways (designer -> company, company -> designer), and only
+-- after a real interaction. Each review is tied to the interaction it's about:
+-- a job application or a direct contact request. One review per side per
+-- interaction. The reviewed side can respond once.
+create table public.reviews (
+  id                 uuid primary key default gen_random_uuid(),
+  reviewer_type      text not null check (reviewer_type in ('designer', 'employer')),
+  employer_id        uuid not null references public.employers (id) on delete cascade,
+  designer_id        uuid not null references public.designers (id) on delete cascade,
+  application_id     uuid references public.applications (id) on delete cascade,
+  contact_request_id uuid references public.contact_requests (id) on delete cascade,
+  rating             int not null check (rating between 1 and 5),
+  comment            text check (comment is null or char_length(comment) <= 1000),
+  response           text check (response is null or char_length(response) <= 1000),
+  responded_at       timestamptz,
+  created_at         timestamptz not null default now(),
+  check (num_nonnulls(application_id, contact_request_id) = 1)
+);
+
+create unique index reviews_one_per_application
+  on public.reviews (reviewer_type, application_id) where application_id is not null;
+create unique index reviews_one_per_contact
+  on public.reviews (reviewer_type, contact_request_id) where contact_request_id is not null;
+create index reviews_employer_idx on public.reviews (employer_id) where reviewer_type = 'designer';
+create index reviews_designer_idx on public.reviews (designer_id) where reviewer_type = 'employer';
+
+-- Who may review whom. A review is allowed only when the two sides actually
+-- interacted on that application or contact request:
+--   1. an interview happened (or was reported), or
+--   2. both sides sent at least one message to each other, or
+--   3. the other side missed its response deadline:
+--      designer -> company: the application wasn't answered by response_due_at
+--      company -> designer: the contact request wasn't answered by response_due_at
+create or replace function public.review_is_allowed(
+  p_reviewer_type text,
+  p_employer_id uuid,
+  p_designer_id uuid,
+  p_application_id uuid,
+  p_contact_request_id uuid
+)
+returns boolean
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  messaged_both_ways boolean;
+begin
+  select
+    exists (select 1 from public.messages m
+            where m.employer_id = p_employer_id and m.designer_id = p_designer_id and m.sender = 'employer')
+    and
+    exists (select 1 from public.messages m
+            where m.employer_id = p_employer_id and m.designer_id = p_designer_id and m.sender = 'designer')
+  into messaged_both_ways;
+
+  if p_application_id is not null then
+    return exists (
+      select 1
+      from public.applications a
+      join public.jobs j on j.id = a.job_id
+      where a.id = p_application_id
+        and a.designer_id = p_designer_id
+        and j.employer_id = p_employer_id
+        and (
+          a.interview_at is not null
+          or a.status in ('interview', 'offer', 'hired')
+          or exists (select 1 from public.interview_reports ir where ir.application_id = a.id)
+          or messaged_both_ways
+          or (p_reviewer_type = 'designer' and a.answered_at is null
+              and a.response_due_at is not null and a.response_due_at < now())
+        )
+    );
+  end if;
+
+  return exists (
+    select 1
+    from public.contact_requests cr
+    where cr.id = p_contact_request_id
+      and cr.designer_id = p_designer_id
+      and cr.employer_id = p_employer_id
+      and (
+        exists (select 1 from public.interview_reports ir where ir.contact_request_id = cr.id)
+        or messaged_both_ways
+        or (p_reviewer_type = 'employer' and cr.responded_at is null
+            and cr.response_due_at is not null and cr.response_due_at < now())
+      )
+  );
+end;
+$$;
+
+revoke all on function public.review_is_allowed(text, uuid, uuid, uuid, uuid) from public, anon, authenticated;
+
+create or replace function public.enforce_review_allowed()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if not public.review_is_allowed(new.reviewer_type, new.employer_id, new.designer_id,
+                                  new.application_id, new.contact_request_id) then
+    raise exception 'A review is only allowed after a real interaction'
+      using errcode = '42501';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger reviews_require_interaction
+  before insert on public.reviews
+  for each row execute function public.enforce_review_allowed();
+
 alter table public.employers          enable row level security;
 alter table public.access_passes      enable row level security;
 alter table public.jobs               enable row level security;
@@ -166,7 +268,7 @@ alter table public.applications       enable row level security;
 alter table public.contact_requests   enable row level security;
 alter table public.interview_reports  enable row level security;
 alter table public.hire_confirmations enable row level security;
-alter table public.employer_reviews   enable row level security;
+alter table public.reviews            enable row level security;
 alter table public.reports            enable row level security;
 alter table public.messages           enable row level security;
 
@@ -190,7 +292,11 @@ select
     select avg(make_interval(weeks => j.expected_length_weeks))
     from public.jobs j
     where j.employer_id = e.id and j.status = 'closed'
-  )                                                          as avg_declared_process_length
+  )                                                          as avg_declared_process_length,
+  (select round(avg(r.rating), 2) from public.reviews r
+   where r.employer_id = e.id and r.reviewer_type = 'designer') as avg_rating,
+  (select count(*) from public.reviews r
+   where r.employer_id = e.id and r.reviewer_type = 'designer') as review_count
 from public.employers e
 left join public.jobs j on j.employer_id = e.id
 left join public.applications a on a.job_id = j.id
@@ -220,12 +326,16 @@ select
     left join public.contact_requests cr on cr.id = ir.contact_request_id
     where coalesce(a.designer_id, cr.designer_id) = d.id
       and not ir.disputed
-  ) as interview_attendance_rate
+  ) as interview_attendance_rate,
+  (select round(avg(r.rating), 2) from public.reviews r
+   where r.designer_id = d.id and r.reviewer_type = 'employer') as avg_rating,
+  (select count(*) from public.reviews r
+   where r.designer_id = d.id and r.reviewer_type = 'employer') as review_count
 from public.designers d;
 
 revoke all on
   public.employers, public.access_passes, public.jobs, public.applications,
-  public.hire_confirmations, public.employer_reviews, public.reports, public.messages,
+  public.hire_confirmations, public.reviews, public.reports, public.messages,
   public.contact_requests, public.interview_reports,
   public.employer_metrics, public.designer_metrics
 from anon, authenticated;
