@@ -184,7 +184,7 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 3. **Approved** (to applicant): "You're in!", what happens next, login link to build the profile.
 4. **Declined** (to applicant): sent only when I click "Send" in the decline preview, never automatically on status change. Personal tone, signed by me. Default template:
    - Subject: "About your application"
-   - Body: thanks for applying; I reviewed your portfolio personally; the reason (from the list) and my note; an invitation to reapply after improving, with the date they can reapply from: "You're welcome to apply again from {date}" ({date} = the moment I click "Send" + 30 days, formatted for the locale, e.g. "December 5, 2026") (except for "Other"); my name. The date in the preview must match the one the form enforces.
+   - Body: thanks for applying; I reviewed your portfolio personally; the reason (from the list) and my note; an invitation to reapply after improving, with the date they can reapply from: "You're welcome to apply again from {date}" ({date} = the moment I click "Send" + 30 days, formatted for the locale, e.g. "December 5, 2026"), included for every reason, "Other" too; my name. The date in the preview must match the one the form enforces.
    - Reply-to set to `ADMIN_EMAIL`, so applicants can answer me directly.
 5. **Daily reminder** (to `ADMIN_EMAIL`, Vercel Cron, 08:00 Israel time): number waiting for a reply (same rule as the "Waiting for reply" view) and how many are older than 5 days, link to admin. Skip if zero.
 
