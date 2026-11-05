@@ -85,6 +85,8 @@ create table public.designers (
   confidential       boolean not null default false,
   show_email         boolean not null default false,
   show_phone         boolean not null default false,
+  -- Optional, monthly gross ILS. Never public; for registered companies in phase 2.
+  salary_expectation int check (salary_expectation is null or salary_expectation >= 0),
 
   own_work_confirmed boolean not null check (own_work_confirmed),
   consent            boolean not null check (consent),
@@ -95,7 +97,7 @@ create table public.designers (
 
   status             text not null default 'pending' check (status in ('pending', 'approved', 'declined')),
   reason             text check (reason is null or reason in (
-                       'no_process_case_studies', 'outside_focus', 'not_enough_experience',
+                       'no_process_case_studies', 'outside_focus', 'not_enough_real_work',
                        'portfolio_link_broken', 'other')),
   reason_note        text,
   internal_notes     text,
@@ -180,7 +182,7 @@ create table public.decline_history (
   designer_id   uuid not null references public.designers (id) on delete cascade,
   declined_at   timestamptz not null default now(),
   reason        text not null check (reason in (
-                  'no_process_case_studies', 'outside_focus', 'not_enough_experience',
+                  'no_process_case_studies', 'outside_focus', 'not_enough_real_work',
                   'portfolio_link_broken', 'other')),
   reason_note   text,
   linkedin_url  text not null,

@@ -37,7 +37,7 @@
   },
   "audience": {
     "title": "Who it's for",
-    "body": "Product, UX/UI and web designers with 3+ years of professional experience and shipped work."
+    "body": "Product, UX/UI and web designers with real, shipped work. Years matter less than the work itself: if you're early in your career, you're welcome too, as long as your portfolio shows strong skills and real projects."
   },
   "founding": {
     "title": "Founding members",
@@ -173,7 +173,7 @@
     "declineReason": {
       "no_process_case_studies": "Portfolio doesn't include case studies that show process",
       "outside_focus": "Most work is outside the platform's current focus",
-      "not_enough_experience": "Less professional experience than currently required (3+ years)",
+      "not_enough_real_work": "Portfolio doesn't yet show enough real project work",
       "portfolio_link_broken": "Portfolio link doesn't work",
       "other": "Other"
     }

@@ -15,7 +15,7 @@ export const APPLICATION_AVAILABILITY = ["actively_looking", "open_to_offers"] a
 export const DECLINE_REASONS = [
   "no_process_case_studies",
   "outside_focus",
-  "not_enough_experience",
+  "not_enough_real_work",
   "portfolio_link_broken",
   "other",
 ] as const;

@@ -74,6 +74,7 @@ Short privacy page (copy below).
   - Confidential search toggle (hide name and photo from employers in phase 2)
   - Portfolio link, LinkedIn link
   - Phone (optional)
+  - Salary expectation (optional): monthly gross, in ILS. Never public; shown only to registered companies in phase 2. Can be left empty.
   - Profile photo (optional, Supabase Storage)
   - Case studies: add, edit, reorder, delete. Each has title, short description (problem, process, outcome), cover image, optional external link, up to 6 images.
   - Contact preferences: email shown to employers yes/no, phone shown yes/no (default: no for both)
@@ -131,6 +132,7 @@ Validation with zod on client and server, error messages next to fields. Honeypo
 - availability text — actively_looking / open_to_offers / not_looking
 - confidential boolean default false
 - show_email boolean default false, show_phone boolean default false
+- salary_expectation int null (monthly gross ILS; optional)
 - own_work_confirmed boolean
 - consent boolean, consent_at timestamptz
 - rules_accepted_at timestamptz null
@@ -161,7 +163,7 @@ One row per decline email sent, so earlier declines remain visible when someone 
 Create only the tables below as empty structures (no UI, no API), so the schema is ready. Field notes reflect decisions already made (see "Phase 2 rules, for reference"):
 - `employers`: company_name, website, contact_name, email, verified boolean, rules_accepted_at, status (active / warned / removed), warnings int, is_founding boolean, created_at
 - `access_passes`: employer_id, type (hiring_round / extension / founding_lifetime / subscription), starts_at, ends_at (null for lifetime), amount_ils, paid_at
-- `jobs`: employer_id, title, description, specialty, product_type, market, seniority, stages jsonb (ordered list), expected_length_weeks (required), budget_min and budget_max (optional, both or neither; visible only to logged-in approved designers, never to visitors), assignment_hours null, assignment_paid boolean, status (open / closed), outcome (hired / not_hired / cancelled, required to close), hired_designer_id null, opened_at, closed_at
+- `jobs`: employer_id, title, description, specialty, product_type, market, seniority, stages jsonb (ordered list), expected_length_weeks (required), budget_min and budget_max (optional, both or neither; monthly gross ILS; budget_max at most 30% above budget_min; visible only to logged-in approved designers, never to visitors), budget_note null (what moves someone up the range), assignment_hours null, assignment_paid boolean, status (open / closed), outcome (hired / not_hired / cancelled, required to close), hired_designer_id null, opened_at, closed_at
 - `applications`: job_id, designer_id, status (sent / viewed / in_review / interview / offer / hired / not_a_fit / withdrawn), status timestamps, response_due_at, rejection_reason (from the professional list), rejection_note, created_at
 - `hire_confirmations`: job_id, designer_id, reported_by (employer / designer), confirmed_by_other boolean, created_at
 - `employer_reviews`: employer_id, designer_id, job_id, rating, comment, employer_response, created_at
@@ -179,7 +181,7 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 ## Decline reasons (admin dropdown)
 - Portfolio doesn't include case studies that show process
 - Most work is outside the platform's current focus
-- Less professional experience than currently required (3+ years)
+- Portfolio doesn't yet show enough real project work
 - Portfolio link doesn't work
 - Other
 
@@ -221,7 +223,7 @@ Product name not decided: placeholder `[Product name]` in one constant.
 - Footer line (every page): Not a recruitment or placement agency. Designers and companies find each other directly.
 
 **Who it's for**
-Product, UX/UI and web designers with 3+ years of professional experience and shipped work.
+Product, UX/UI and web designers with real, shipped work. Years matter less than the work itself: if you're early in your career, you're welcome too, as long as your portfolio shows strong skills and real projects.
 
 **Founding members**
 We're starting small: first we're building the designer community, and companies join next. The first designers will help shape how this works.
@@ -241,6 +243,10 @@ So the schema and naming fit what's coming:
 - **Employers pay for access, never per hire.** Main product: a hiring round pass (~60 days, extendable by 30). Founding lifetime offer for the first 10–20 companies only. Subscription later.
 - **Every role must state:** stages, expected process length, and assignment terms.
 - **Budget range: optional but encouraged.** Roles that share one get a "Budget shared" label, and designers can filter by it. The budget range is visible only to logged-in approved designers, never to unregistered visitors.
+  - Amounts are monthly gross, in ILS.
+  - The top of the range can be at most 30% above the bottom, so the range stays meaningful.
+  - Optional note on what moves someone up the range (e.g. "Top of range: 8+ years and design-system experience").
+  - Designers can state their own salary expectation in their profile (optional, never public), so the conversation starts from both numbers.
 - **Employers must:** answer every applicant within a set time, with a reason from a professional-only list (experience, portfolio fit, product type, seniority, budget, other) plus an optional professional note. No personal reasons.
 - **Employer rating** is built mainly from objective data (answer rate, response time, actual vs. declared process length). New employers show "New on the platform". Employers can respond to reviews. Repeated violations: warning, then removal.
 - **Success** = a signed contract, reported in the platform: closing a role requires an outcome; the designer can also report a hire and earns a "Hired through the platform" badge; the other side is asked to confirm.
