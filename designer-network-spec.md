@@ -17,7 +17,7 @@ This spec covers **phase 1 only: the designer side + my admin (moderation) area*
 A designer's profile becomes **visible to employers** (phase 2) only when all of these are true. Each is objective; none is a judgment of quality.
 - Email confirmed (they logged in through the magic link at least once)
 - Designer rules accepted
-- LinkedIn link and portfolio link present and in a valid format
+- Portfolio link present and in a valid format
 - At least one case study with a title and description
 - Account status is `active` (not hidden or removed by moderation)
 
@@ -46,7 +46,7 @@ Until then, the editor shows a checklist of what's missing. No human review is n
 
 ## Privacy principles (apply everywhere)
 - Collect the minimum. No ID numbers, addresses, dates of birth, or resume file uploads.
-- Portfolio and LinkedIn are stored as links, not files.
+- Portfolio and LinkedIn (optional) are stored as links, not files.
 - Designers manage their own profile content and can delete their account at any time; deletion removes all their data (including stored images).
 - Phone is not collected at signup. Designers can add it in their profile if they want to; it is never shown publicly, and shown to employers only if they turn on "phone shown".
 - A clear privacy notice at signup (what's collected, why, who can see it, that it's voluntary, and how to request deletion).
@@ -93,7 +93,7 @@ Email field only. Always responds "Check your email" (whether or not the account
   - Specialty, years of experience, product type, market, platforms, industries (prefilled from signup, editable)
   - Availability: actively looking / open to offers / not looking
   - Confidential search toggle (hide name and photo from employers in phase 2)
-  - Portfolio link, LinkedIn link
+  - Portfolio link; LinkedIn link (optional, not asked at signup)
   - Phone (optional)
   - Salary expectation (optional): monthly gross, in ILS. Never public; shown only to registered companies in phase 2. Can be left empty.
   - Profile photo (optional, Supabase Storage)
@@ -122,7 +122,6 @@ Email field only. Always responds "Check your email" (whether or not the account
 |---|---|---|---|
 | full_name | Full name | text | yes |
 | email | Email | email | yes |
-| linkedin_url | LinkedIn profile | url | yes |
 | portfolio_url | Portfolio link | url | yes |
 | specialty | Specialty | select: Product design / UX/UI / Web design / Brand / Other | yes |
 | years_experience | Years of professional experience | select: 0-2 / 3-5 / 6-9 / 10+ | yes |
@@ -150,7 +149,7 @@ On submit (server action):
 - created_at, updated_at (trigger)
 - email_confirmed_at timestamptz null (set on first successful magic-link login)
 - full_name, email (unique, lowercase), phone (null)
-- linkedin_url, portfolio_url
+- portfolio_url, linkedin_url (null; optional, added from the profile)
 - display_name (null), headline (null), bio (null), photo_path (null)
 - specialty, years_experience, product_type, market
 - platforms text[] default '{}', industries text null
@@ -259,7 +258,7 @@ Product name not decided: placeholder `[Product name]` in one constant.
 - Note under the companies column: Companies join after the designer community is in place.
 
 **How it works**
-1. Create your profile with your portfolio and LinkedIn
+1. Create your profile with a link to your portfolio
 2. Add at least one case study, and your profile is ready to be found
 3. When companies join, they search and reach out. You decide who to talk to.
 
@@ -278,7 +277,7 @@ We're starting small: first we're building the designer community, and companies
 Joining doesn't guarantee a job. Companies on the platform search and reach out to designers themselves. What we do guarantee: the same rules for both sides, and consequences for anyone who breaks them.
 
 **Privacy page**
-- What we store: the details you entered when signing up, links to your portfolio and LinkedIn, and the content you add to your profile.
+- What we store: the details you entered when signing up, a link to your portfolio (and LinkedIn, if you add it), and the content you add to your profile.
 - Why: to show your profile to companies on the platform, and to keep the platform safe (for example, removing fake profiles).
 - Who sees it: our team, for moderation only. Once companies join, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to. Your reliability record (response and attendance) is visible to registered companies.
 - Providing your details is voluntary.

@@ -26,7 +26,6 @@ function readForm(form: HTMLFormElement) {
   return {
     full_name: text("full_name"),
     email: text("email"),
-    linkedin_url: text("linkedin_url"),
     portfolio_url: text("portfolio_url"),
     specialty: text("specialty"),
     years_experience: text("years_experience"),
@@ -100,14 +99,6 @@ export function SignupForm() {
       </Group>
 
       <Group title={t("groups.work")}>
-        <TextField
-          name="linkedin_url"
-          type="url"
-          label={t("fields.linkedin_url")}
-          placeholder="https://www.linkedin.com/in/"
-          dir="ltr"
-          error={errorFor("linkedin_url")}
-        />
         <TextField
           name="portfolio_url"
           type="url"

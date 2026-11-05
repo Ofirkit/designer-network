@@ -26,7 +26,8 @@ const httpUrl = z
     }
   }, "invalidUrl");
 
-const linkedinUrl = httpUrl.refine((value) => {
+// Used by the profile editor (LinkedIn is optional and not asked at signup).
+export const linkedinUrl = httpUrl.refine((value) => {
   try {
     const host = new URL(value).hostname.toLowerCase();
     return host === "linkedin.com" || host.endsWith(".linkedin.com");
@@ -40,7 +41,6 @@ const mustBeChecked = z.literal(true, { error: "mustAccept" });
 export const signupSchema = z.object({
   full_name: z.string().trim().min(2, "required").max(120, "tooLong"),
   email: z.string().trim().toLowerCase().max(254, "tooLong").pipe(z.email("invalidEmail")),
-  linkedin_url: linkedinUrl,
   portfolio_url: httpUrl,
   specialty: z.enum(SPECIALTIES, { error: "required" }),
   years_experience: z.enum(YEARS_EXPERIENCE, { error: "required" }),

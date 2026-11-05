@@ -63,7 +63,7 @@
   "howItWorks": {
     "title": "How it works",
     "steps": {
-      "profile": "Create your profile with your portfolio and LinkedIn",
+      "profile": "Create your profile with a link to your portfolio",
       "caseStudy": "Add at least one case study, and your profile is ready to be found",
       "found": "When companies join, they search and reach out. You decide who to talk to."
     }
@@ -152,7 +152,7 @@
     "sections": {
       "what": {
         "title": "What we store",
-        "body": "The details you entered when signing up, links to your portfolio and LinkedIn, and the content you add to your profile."
+        "body": "The details you entered when signing up, a link to your portfolio (and LinkedIn, if you add it), and the content you add to your profile."
       },
       "why": {
         "title": "Why",

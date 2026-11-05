@@ -67,7 +67,8 @@ create table public.designers (
   full_name          text not null check (char_length(full_name) between 2 and 120),
   email              text not null unique check (email = lower(email)),
   phone              text check (phone is null or char_length(phone) <= 30),
-  linkedin_url       text not null check (char_length(linkedin_url) <= 500),
+  -- Optional; not asked at signup, can be added in the profile.
+  linkedin_url       text check (linkedin_url is null or char_length(linkedin_url) <= 500),
   portfolio_url      text not null check (char_length(portfolio_url) <= 500),
 
   display_name       text check (display_name is null or char_length(display_name) <= 120),
@@ -245,7 +246,6 @@ select
   array_remove(array[
     case when d.email_confirmed_at is null then 'email_confirmed' end,
     case when d.rules_accepted_at is null then 'rules_accepted' end,
-    case when coalesce(d.linkedin_url, '') = '' then 'linkedin_url' end,
     case when coalesce(d.portfolio_url, '') = '' then 'portfolio_url' end,
     case when not exists (
       select 1 from public.case_studies c
@@ -258,7 +258,6 @@ select
   (
     d.email_confirmed_at is not null
     and d.rules_accepted_at is not null
-    and coalesce(d.linkedin_url, '') <> ''
     and coalesce(d.portfolio_url, '') <> ''
     and d.status = 'active'
     and exists (
