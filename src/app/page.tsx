@@ -6,7 +6,10 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { PRODUCT_NAME } from "@/config/site";
 
-const BENEFITS = ["review", "profile", "answers", "control"] as const;
+const SIDES = [
+  { side: "designers", keys: ["answers", "review", "process", "privacy"] },
+  { side: "companies", keys: ["vetted", "work", "commitment", "fees"] },
+] as const;
 const STEPS = ["apply", "review", "profile"] as const;
 
 function SectionTitle({ index, children }: { index: string; children: React.ReactNode }) {
@@ -45,17 +48,28 @@ export default async function LandingPage() {
           </Container>
         </section>
 
-        {/* 2. What you get */}
+        {/* 2. How we fix it: for designers / for companies */}
         <section className="border-t border-line">
           <Container className="grid gap-10 py-16 sm:py-24 md:grid-cols-[1fr_2fr]">
-            <SectionTitle index="01">{t("benefits.title")}</SectionTitle>
-            <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-              {BENEFITS.map((key) => (
-                <li key={key} className="border-t border-ink pt-5 text-lg leading-snug sm:text-xl">
-                  {t(`benefits.items.${key}`)}
-                </li>
+            <SectionTitle index="01">{t("twoSides.title")}</SectionTitle>
+            <div className="grid gap-14 sm:grid-cols-2 sm:gap-10">
+              {SIDES.map(({ side, keys }) => (
+                <div key={side}>
+                  <h3 className="border-b border-ink pb-4 text-lg font-semibold">{t(`twoSides.${side}.title`)}</h3>
+                  <ul className="divide-y divide-line">
+                    {keys.map((key) => (
+                      <li key={key} className="py-6">
+                        <p className="text-[15px] text-muted">{t(`twoSides.${side}.items.${key}.pain`)}</p>
+                        <p className="mt-2 text-lg leading-snug">{t(`twoSides.${side}.items.${key}.fix`)}</p>
+                      </li>
+                    ))}
+                  </ul>
+                  {side === "companies" && (
+                    <p className="mt-2 text-sm text-muted">{t("twoSides.companiesNote")}</p>
+                  )}
+                </div>
               ))}
-            </ul>
+            </div>
           </Container>
         </section>
 

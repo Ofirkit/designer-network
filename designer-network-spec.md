@@ -44,7 +44,7 @@ Public copy speaks as "we" (a team of reviewers), never "I". This applies to the
 ### 1. Landing page `/`
 Sections, top to bottom (copy below):
 1. Hero: headline, subheadline, CTA that scrolls to the form
-2. What you get (4 items)
+2. How we fix it: two columns, For designers / For companies (4 items each: the problem, then the fix)
 3. How it works (3 steps)
 4. Not a hiring agency
 5. Who it's for
@@ -206,11 +206,20 @@ Product name not decided: placeholder `[Product name]` in one constant.
 - Subheadline: Designers get ghosted. Companies drown in applications they can't judge. [Product name] fixes hiring at the root: designers vetted by designers, a clear process and timeline for every role, and accountability on both sides.
 - CTA: Apply to join
 
-**What you get**
-- Real designers review your work, not an algorithm
-- A professional profile with case studies, instead of another resume file
-- Companies that commit to answering, with a reason and on time
-- You decide what to share, and with whom
+**How we fix it**
+
+*For designers*
+- Applied, interviewed, then silence. → Every company commits to answering every application on time. If it's a no, they tell you why.
+- Filtered out by keywords and HR screens. → Your work is reviewed by designers, and shown through case studies instead of a resume.
+- Processes that drag on with no end date. → Every role shows its interview stages and expected timeline before you apply.
+- Searching while employed feels risky. → Search confidentially. You decide who sees your name, photo and contact details.
+
+*For companies*
+- Hundreds of applications you can't judge. → Every designer here is vetted by designers before they join.
+- Resumes that say nothing about craft. → Profiles built around case studies that show process and outcome.
+- Candidates who skip interviews or disappear. → Designers commit to showing up and keeping their status current. Repeated violations lead to removal.
+- Recruiter fees on every hire. → You pay for access, never per hire. You search and reach out to designers yourself.
+- Note under the companies column: Companies join after the designer community is in place.
 
 **How it works**
 1. Apply with your portfolio and LinkedIn

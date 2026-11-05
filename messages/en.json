@@ -13,13 +13,50 @@
     "subheadline": "Designers get ghosted. Companies drown in applications they can't judge. {product} fixes hiring at the root: designers vetted by designers, a clear process and timeline for every role, and accountability on both sides.",
     "cta": "Apply to join"
   },
-  "benefits": {
-    "title": "What you get",
-    "items": {
-      "review": "Real designers review your work, not an algorithm",
-      "profile": "A professional profile with case studies, instead of another resume file",
-      "answers": "Companies that commit to answering, with a reason and on time",
-      "control": "You decide what to share, and with whom"
+  "twoSides": {
+    "title": "How we fix it",
+    "companiesNote": "Companies join after the designer community is in place.",
+    "designers": {
+      "title": "For designers",
+      "items": {
+        "answers": {
+          "pain": "Applied, interviewed, then silence.",
+          "fix": "Every company commits to answering every application on time. If it's a no, they tell you why."
+        },
+        "review": {
+          "pain": "Filtered out by keywords and HR screens.",
+          "fix": "Your work is reviewed by designers, and shown through case studies instead of a resume."
+        },
+        "process": {
+          "pain": "Processes that drag on with no end date.",
+          "fix": "Every role shows its interview stages and expected timeline before you apply."
+        },
+        "privacy": {
+          "pain": "Searching while employed feels risky.",
+          "fix": "Search confidentially. You decide who sees your name, photo and contact details."
+        }
+      }
+    },
+    "companies": {
+      "title": "For companies",
+      "items": {
+        "vetted": {
+          "pain": "Hundreds of applications you can't judge.",
+          "fix": "Every designer here is vetted by designers before they join."
+        },
+        "work": {
+          "pain": "Resumes that say nothing about craft.",
+          "fix": "Profiles built around case studies that show process and outcome."
+        },
+        "commitment": {
+          "pain": "Candidates who skip interviews or disappear.",
+          "fix": "Designers commit to showing up and keeping their status current. Repeated violations lead to removal."
+        },
+        "fees": {
+          "pain": "Recruiter fees on every hire.",
+          "fix": "You pay for access, never per hire. You search and reach out to designers yourself."
+        }
+      }
     }
   },
   "howItWorks": {
