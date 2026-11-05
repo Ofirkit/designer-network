@@ -83,8 +83,9 @@ Short privacy page (copy below).
   - Reason dropdown (list below) + optional note
   - Internal notes (never shown to the applicant)
   - "Mark as replied" sets `replied_at = now()`
+  - **Previous applications**: if this applicant was declined before, show each earlier decline at the top of the detail view: "Declined on {date}: {reason}", my note, and the portfolio and LinkedIn links they submitted back then. This lets me compare with the new application and see if they improved.
 - On **Approve**: send the approval email with a login link.
-- On **Decline**: do NOT send automatically. Show a decline preview of the "Declined" email (default template, with the chosen reason and my note) that I can edit, with a "Send" button. The email is sent only when I click "Send". Then I mark it as replied.
+- On **Decline**: do NOT send automatically. Show a decline preview of the "Declined" email (default template, with the chosen reason and my note) that I can edit, with a "Send" button. The email is sent only when I click "Send". Clicking "Send" also sets `replied_at = now()` and adds a row to `decline_history` (date, reason, note, and the links submitted).
 
 ## Application form fields
 | Field | Label | Type | Required |
@@ -105,7 +106,7 @@ Short privacy page (copy below).
 | own_work | All work in my portfolio is my own, or clearly credited | checkbox | yes |
 | consent | I've read the privacy policy and agree to my details being stored to use the platform | checkbox | yes |
 
-Validation with zod on client and server, error messages next to fields. Honeypot field + reject submissions faster than 3 seconds. Duplicate email → "We already have an application from this email."
+Validation with zod on client and server, error messages next to fields. Honeypot field + reject submissions faster than 3 seconds. Duplicate email: if the existing application is `pending` or `approved` → "We already have an application from this email." If it is `declined`, accept it as a reapplication: update the row with the new answers and set `status = 'pending'`, clearing `reason`, `reason_note`, `replied_at` and `approved_at` (the earlier decline stays in `decline_history`).
 
 ## Database
 
@@ -130,6 +131,14 @@ Validation with zod on client and server, error messages next to fields. Honeypo
 - internal_notes text null
 - replied_at timestamptz null
 - approved_at timestamptz null
+
+### `decline_history`
+One row per decline email sent, so earlier declines remain visible when someone reapplies.
+- id uuid pk, designer_id fk (on delete cascade)
+- declined_at timestamptz (the moment "Send" was clicked)
+- reason text, reason_note text null
+- linkedin_url, portfolio_url (as submitted at the time)
+- RLS: admin only (designers cannot read it)
 
 ### `case_studies`
 - id uuid pk, designer_id fk (on delete cascade)
@@ -249,6 +258,8 @@ So the schema and naming fit what's coming:
 - [ ] Hebrew text entered by users (names, bios, case studies) displays in the right direction everywhere, including the admin
 - [ ] Form submission saves a row, sends emails 1 and 2, redirects to `/thanks`
 - [ ] Duplicate email and invalid URLs show clear errors
+- [ ] A declined applicant can reapply with the same email, and the admin detail shows the earlier decline date, reason, note and links
+- [ ] Clicking "Send" on a decline sends the email, sets `replied_at` and records the decline in `decline_history`
 - [ ] Anonymous users cannot read any table (verify with the anon key)
 - [ ] Only `ADMIN_EMAIL` can open `/admin`
 - [ ] Pending or declined applicants cannot log in
