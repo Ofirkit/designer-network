@@ -1,13 +1,15 @@
--- Phase 1: designers, decline history, case studies.
--- Row Level Security is enabled on every table. The public application form
--- never writes directly: it goes through a server action using the service
--- role key, which bypasses RLS.
+-- Phase 1: designers, case studies, moderation log, signup attempts.
+-- Open model: designers sign up and build a profile straight away.
+-- A profile is visible to employers (phase 2) only when objective conditions
+-- are met (see public.designer_visibility). Nobody judges quality.
+--
+-- Row Level Security is enabled on every table. Signup never writes from the
+-- browser: it goes through a server action using the service role key.
 
 -- ---------------------------------------------------------------------------
 -- Admin identity
 -- ---------------------------------------------------------------------------
--- The admin is whoever logs in with this email. Set it once after migrating
--- (see README):
+-- Set once after migrating (see README), with the same value as ADMIN_EMAIL:
 --   insert into private.settings (key, value) values ('admin_email', 'you@example.com')
 --   on conflict (key) do update set value = excluded.value;
 
@@ -59,8 +61,8 @@ create table public.designers (
   user_id            uuid unique references auth.users (id) on delete set null,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  -- Set on the first application and again on every reapplication.
-  applied_at         timestamptz not null default now(),
+  -- Set on the first successful magic-link login.
+  email_confirmed_at timestamptz,
 
   full_name          text not null check (char_length(full_name) between 2 and 120),
   email              text not null unique check (email = lower(email)),
@@ -93,28 +95,23 @@ create table public.designers (
   consent_at         timestamptz not null default now(),
   rules_accepted_at  timestamptz,
 
+  -- Moderation (admin-managed)
+  status             text not null default 'active' check (status in ('active', 'hidden', 'removed')),
   warnings           int not null default 0 check (warnings >= 0),
-
-  status             text not null default 'pending' check (status in ('pending', 'approved', 'declined')),
-  reason             text check (reason is null or reason in (
-                       'no_process_case_studies', 'outside_focus', 'not_enough_real_work',
-                       'portfolio_link_broken', 'other')),
-  reason_note        text,
-  internal_notes     text,
-  replied_at         timestamptz,
-  approved_at        timestamptz
+  internal_notes     text
 );
 
-create index designers_waiting_idx on public.designers (applied_at)
-  where replied_at is null and status in ('pending', 'declined');
+create index designers_created_idx on public.designers (created_at desc);
 create index designers_status_idx on public.designers (status);
+-- For the daily cleanup of unconfirmed signups.
+create index designers_unconfirmed_idx on public.designers (created_at) where email_confirmed_at is null;
 
 create trigger designers_set_updated_at
   before update on public.designers
   for each row execute function public.set_updated_at();
 
--- Designers may edit their own profile, but never the fields the admin owns.
--- RLS decides *which rows*; this trigger decides *which columns*.
+-- Designers may edit their own profile, but never the fields the system or
+-- the admin owns. RLS decides *which rows*; this trigger decides *which columns*.
 create or replace function public.protect_designer_admin_fields()
 returns trigger
 language plpgsql
@@ -122,18 +119,14 @@ set search_path = ''
 as $$
 begin
   if (select auth.role()) = 'authenticated' and not public.is_admin() then
-    if new.status            is distinct from old.status
-    or new.reason            is distinct from old.reason
-    or new.reason_note       is distinct from old.reason_note
-    or new.internal_notes    is distinct from old.internal_notes
-    or new.replied_at        is distinct from old.replied_at
-    or new.approved_at       is distinct from old.approved_at
-    or new.applied_at        is distinct from old.applied_at
-    or new.warnings          is distinct from old.warnings
-    or new.user_id           is distinct from old.user_id
-    or new.email             is distinct from old.email
-    or new.consent_at        is distinct from old.consent_at
-    or new.created_at        is distinct from old.created_at
+    if new.status             is distinct from old.status
+    or new.warnings           is distinct from old.warnings
+    or new.internal_notes     is distinct from old.internal_notes
+    or new.user_id            is distinct from old.user_id
+    or new.email              is distinct from old.email
+    or new.email_confirmed_at is distinct from old.email_confirmed_at
+    or new.consent_at         is distinct from old.consent_at
+    or new.created_at         is distinct from old.created_at
     then
       raise exception 'Not allowed to change admin-managed fields'
         using errcode = '42501';
@@ -153,14 +146,15 @@ create trigger designers_protect_admin_fields
 
 alter table public.designers enable row level security;
 
-create policy "designers: owner reads own approved row"
+-- Removed accounts can't read or edit anything.
+create policy "designers: owner reads own row"
   on public.designers for select to authenticated
-  using (user_id = (select auth.uid()) and status = 'approved');
+  using (user_id = (select auth.uid()) and status <> 'removed');
 
-create policy "designers: owner updates own approved row"
+create policy "designers: owner updates own row"
   on public.designers for update to authenticated
-  using (user_id = (select auth.uid()) and status = 'approved')
-  with check (user_id = (select auth.uid()) and status = 'approved');
+  using (user_id = (select auth.uid()) and status <> 'removed')
+  with check (user_id = (select auth.uid()) and status <> 'removed');
 
 create policy "designers: admin reads all"
   on public.designers for select to authenticated
@@ -171,31 +165,8 @@ create policy "designers: admin updates all"
   using ((select public.is_admin()))
   with check ((select public.is_admin()));
 
--- No insert or delete policies: applications and account deletion go
--- through server code with the service role key.
-
--- ---------------------------------------------------------------------------
--- decline_history: one row per decline email sent
--- ---------------------------------------------------------------------------
-create table public.decline_history (
-  id            uuid primary key default gen_random_uuid(),
-  designer_id   uuid not null references public.designers (id) on delete cascade,
-  declined_at   timestamptz not null default now(),
-  reason        text not null check (reason in (
-                  'no_process_case_studies', 'outside_focus', 'not_enough_real_work',
-                  'portfolio_link_broken', 'other')),
-  reason_note   text,
-  linkedin_url  text not null,
-  portfolio_url text not null
-);
-
-create index decline_history_designer_idx on public.decline_history (designer_id, declined_at desc);
-
-alter table public.decline_history enable row level security;
-
-create policy "decline_history: admin reads all"
-  on public.decline_history for select to authenticated
-  using ((select public.is_admin()));
+-- No insert or delete policies: signup and account deletion go through
+-- server code with the service role key.
 
 -- ---------------------------------------------------------------------------
 -- case_studies
@@ -219,7 +190,7 @@ create trigger case_studies_set_updated_at
   before update on public.case_studies
   for each row execute function public.set_updated_at();
 
--- The approved designer who owns this designers row.
+-- True when the current user owns this designers row and isn't removed.
 create or replace function public.owns_designer(target uuid)
 returns boolean
 language sql
@@ -231,7 +202,7 @@ as $$
     select 1 from public.designers d
     where d.id = target
       and d.user_id = (select auth.uid())
-      and d.status = 'approved'
+      and d.status <> 'removed'
   );
 $$;
 
@@ -261,5 +232,89 @@ create policy "case_studies: admin reads all"
   on public.case_studies for select to authenticated
   using ((select public.is_admin()));
 
--- Anonymous visitors get nothing from any of these tables.
-revoke all on public.designers, public.decline_history, public.case_studies from anon;
+-- ---------------------------------------------------------------------------
+-- Visibility: "verified, not vetted"
+-- ---------------------------------------------------------------------------
+-- A profile is visible to employers only when every objective condition is
+-- met. `missing` lists what's left, for the checklist in the editor.
+-- security_invoker: callers only see rows RLS already lets them see.
+create view public.designer_visibility
+with (security_invoker = true) as
+select
+  d.id as designer_id,
+  array_remove(array[
+    case when d.email_confirmed_at is null then 'email_confirmed' end,
+    case when d.rules_accepted_at is null then 'rules_accepted' end,
+    case when coalesce(d.linkedin_url, '') = '' then 'linkedin_url' end,
+    case when coalesce(d.portfolio_url, '') = '' then 'portfolio_url' end,
+    case when not exists (
+      select 1 from public.case_studies c
+      where c.designer_id = d.id
+        and char_length(trim(c.title)) > 0
+        and char_length(trim(c.description)) > 0
+    ) then 'case_study' end,
+    case when d.status <> 'active' then 'status_active' end
+  ], null) as missing,
+  (
+    d.email_confirmed_at is not null
+    and d.rules_accepted_at is not null
+    and coalesce(d.linkedin_url, '') <> ''
+    and coalesce(d.portfolio_url, '') <> ''
+    and d.status = 'active'
+    and exists (
+      select 1 from public.case_studies c
+      where c.designer_id = d.id
+        and char_length(trim(c.title)) > 0
+        and char_length(trim(c.description)) > 0
+    )
+  ) as is_visible
+from public.designers d;
+
+-- ---------------------------------------------------------------------------
+-- moderation_log: every warn / hide / remove / restore
+-- ---------------------------------------------------------------------------
+create table public.moderation_log (
+  id            uuid primary key default gen_random_uuid(),
+  designer_id   uuid not null references public.designers (id) on delete cascade,
+  action        text not null check (action in ('warn', 'hide', 'remove', 'restore')),
+  reason        text not null check (reason in (
+                  'fake_profile', 'work_not_own', 'broken_portfolio', 'broke_rules',
+                  'reported_by_company', 'other')),
+  note          text,
+  email_sent_at timestamptz,
+  created_at    timestamptz not null default now()
+);
+
+create index moderation_log_designer_idx on public.moderation_log (designer_id, created_at desc);
+
+alter table public.moderation_log enable row level security;
+
+create policy "moderation_log: admin reads all"
+  on public.moderation_log for select to authenticated
+  using ((select public.is_admin()));
+
+-- ---------------------------------------------------------------------------
+-- signup_attempts: rate limiting and abuse spotting (never the raw IP)
+-- ---------------------------------------------------------------------------
+create table public.signup_attempts (
+  id         uuid primary key default gen_random_uuid(),
+  email      text not null,
+  ip_hash    text not null,
+  outcome    text not null check (outcome in ('created', 'existing', 'removed', 'rejected_spam')),
+  created_at timestamptz not null default now()
+);
+
+create index signup_attempts_ip_idx on public.signup_attempts (ip_hash, created_at desc);
+create index signup_attempts_created_idx on public.signup_attempts (created_at);
+
+alter table public.signup_attempts enable row level security;
+
+create policy "signup_attempts: admin reads all"
+  on public.signup_attempts for select to authenticated
+  using ((select public.is_admin()));
+
+-- Anonymous visitors get nothing from any of these.
+revoke all on
+  public.designers, public.case_studies, public.moderation_log,
+  public.signup_attempts, public.designer_visibility
+from anon;

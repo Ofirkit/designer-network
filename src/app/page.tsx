@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { ApplicationForm } from "@/components/application-form";
+import { SignupForm } from "@/components/signup-form";
 import { Container } from "@/components/container";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { PRODUCT_NAME } from "@/config/site";
 
 const SIDES = [
-  { side: "designers", keys: ["answers", "review", "process", "privacy"] },
-  { side: "companies", keys: ["vetted", "work", "commitment", "fees"] },
+  { side: "designers", keys: ["answers", "work", "process", "trackRecord"] },
+  { side: "companies", keys: ["work", "reliability", "fees", "confidential"] },
 ] as const;
-const STEPS = ["apply", "review", "profile"] as const;
+const STEPS = ["profile", "caseStudy", "found"] as const;
 
 function SectionTitle({ index, children }: { index: string; children: React.ReactNode }) {
   return (
@@ -37,7 +37,7 @@ export default async function LandingPage() {
             </h1>
             <p className="mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{t("hero.subheadline", { product: PRODUCT_NAME })}</p>
             <a
-              href="#apply"
+              href="#signup"
               className="mt-10 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-base font-medium text-white transition-colors hover:bg-accent-strong"
             >
               {t("hero.cta")}
@@ -114,8 +114,8 @@ export default async function LandingPage() {
           </Container>
         </section>
 
-        {/* 6. Application form  +  7. Good to know (inside the form, above submit) */}
-        <section id="apply" className="scroll-mt-4 border-t border-line">
+        {/* 7. Signup form  +  8. Good to know (inside the form, above submit) */}
+        <section id="signup" className="scroll-mt-4 border-t border-line">
           <Container className="grid gap-12 py-16 sm:py-24 md:grid-cols-[1fr_2fr]">
             <div className="md:sticky md:top-10 md:self-start">
               <SectionTitle index="06">{t("form.title")}</SectionTitle>
@@ -132,7 +132,7 @@ export default async function LandingPage() {
               </div>
             </div>
             <div className="max-w-2xl">
-              <ApplicationForm />
+              <SignupForm />
             </div>
           </Container>
         </section>

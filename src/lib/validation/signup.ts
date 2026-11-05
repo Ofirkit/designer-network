@@ -37,7 +37,7 @@ const linkedinUrl = httpUrl.refine((value) => {
 
 const mustBeChecked = z.literal(true, { error: "mustAccept" });
 
-export const applicationSchema = z.object({
+export const signupSchema = z.object({
   full_name: z.string().trim().min(2, "required").max(120, "tooLong"),
   email: z.string().trim().toLowerCase().max(254, "tooLong").pipe(z.email("invalidEmail")),
   linkedin_url: linkedinUrl,
@@ -59,5 +59,5 @@ export const applicationSchema = z.object({
   consent: mustBeChecked,
 });
 
-export type ApplicationInput = z.input<typeof applicationSchema>;
-export type Application = z.output<typeof applicationSchema>;
+export type SignupInput = z.input<typeof signupSchema>;
+export type Signup = z.output<typeof signupSchema>;

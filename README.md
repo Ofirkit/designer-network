@@ -5,14 +5,17 @@ The full spec is in [`designer-network-spec.md`](designer-network-spec.md).
 
 ## Status
 
-| Stage | Spec steps | State |
-|---|---|---|
-| A | 1–3: setup, database, landing, `/privacy`, `/thanks` | Done |
-| B | 4–5: application form submission, emails 1–2 | Next |
-| C | 6–7: admin, approve/decline, designer login | — |
-| D | 8–11: rules, profile editor, case studies, deletion, cron, deploy docs | — |
+The platform uses an **open, verified-not-vetted model**: designers sign up and build a profile
+straight away, with no approval step (see the spec).
 
-The application form validates in the browser today; submitting it is wired up in stage B.
+| Stage | Spec build steps | State |
+|---|---|---|
+| A | 1–3: setup, database, landing, `/privacy`, `/check-email`, `/login` | Done |
+| B | 4–5: signup submission, sign-in link, welcome email | Next |
+| C | 6–7: rules, profile editor, visibility checklist, case studies, deletion | — |
+| D | 8–10: admin moderation, daily cron, deploy docs | — |
+
+The signup and login forms validate in the browser today; submitting them is wired up in stage B.
 
 ## Run locally
 
@@ -28,9 +31,11 @@ Open http://localhost:3000.
 
 SQL migrations are in `supabase/migrations/`:
 
-1. `…_designers.sql`: `designers`, `decline_history`, `case_studies`, Row Level Security, admin-field protection
+1. `…_designers.sql`: `designers`, `case_studies`, `moderation_log`, `signup_attempts`, the
+   `designer_visibility` view ("verified, not vetted"), Row Level Security, admin-field protection
 2. `…_storage.sql`: private `designer-media` bucket and its policies
-3. `…_phase2_placeholders.sql`: empty, locked phase 2 tables and the `employer_metrics` view
+3. `…_phase2_placeholders.sql`: empty, locked phase 2 tables, plus `employer_metrics` and
+   `designer_metrics` (track records for both sides)
 
 Apply them with the Supabase CLI (`supabase db push`) or paste them in order into the SQL editor.
 Then set the admin email (the same value as `ADMIN_EMAIL`):

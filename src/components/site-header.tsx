@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { PRODUCT_NAME } from "@/config/site";
 import { Container } from "./container";
 
-export async function SiteHeader({ showApply = true }: { showApply?: boolean }) {
+export async function SiteHeader({ showSignUp = true }: { showSignUp?: boolean }) {
   const t = await getTranslations("nav");
   return (
     <header className="border-b border-line">
@@ -17,14 +17,19 @@ export async function SiteHeader({ showApply = true }: { showApply?: boolean }) 
         <Link href="/" className="text-base font-semibold tracking-tight">
           {PRODUCT_NAME}
         </Link>
-        {showApply && (
-          <Link
-            href="/#apply"
-            className="rounded-full border border-ink px-4 py-1.5 text-sm font-medium transition-colors hover:bg-ink hover:text-paper"
-          >
-            {t("apply")}
+        <nav className="flex items-center gap-5">
+          <Link href="/login" className="text-sm font-medium underline-offset-4 hover:underline">
+            {t("login")}
           </Link>
-        )}
+          {showSignUp && (
+            <Link
+              href="/#signup"
+              className="rounded-full border border-ink px-4 py-1.5 text-sm font-medium transition-colors hover:bg-ink hover:text-paper"
+            >
+              {t("signUp")}
+            </Link>
+          )}
+        </nav>
       </Container>
     </header>
   );

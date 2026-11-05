@@ -4,7 +4,7 @@ import { Container } from "@/components/container";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
-const SECTIONS = ["what", "why", "who", "voluntary", "control"] as const;
+const SECTIONS = ["what", "why", "who", "voluntary", "control", "unconfirmed"] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("privacy");

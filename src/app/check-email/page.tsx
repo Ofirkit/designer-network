@@ -4,11 +4,11 @@ import { Container } from "@/components/container";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
-export default async function ThanksPage() {
-  const t = await getTranslations("thanks");
+export default async function CheckEmailPage() {
+  const t = await getTranslations("checkEmail");
   return (
     <>
-      <SiteHeader showApply={false} />
+      <SiteHeader showSignUp={false} />
       <main id="main" className="flex-1">
         <Container className="py-24 sm:py-36">
           <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.03em] sm:text-6xl">{t("title")}</h1>

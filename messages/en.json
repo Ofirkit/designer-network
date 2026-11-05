@@ -1,17 +1,18 @@
 {
   "meta": {
-    "title": "{product} — an exclusive community of vetted designers",
-    "description": "Designers get ghosted. Companies drown in applications they can't judge. {product} fixes hiring at the root: designers vetted by designers, a clear process and timeline for every role, and accountability on both sides."
+    "title": "{product} — hiring on equal terms for designers and companies",
+    "description": "Designers get ghosted. Companies get no-shows and resumes that say nothing. {product} puts both sides on equal terms: the same standards for everyone, a clear process for every role, and a track record each side can see."
   },
   "nav": {
-    "apply": "Apply",
+    "signUp": "Create profile",
+    "login": "Log in",
     "skipToContent": "Skip to content"
   },
   "hero": {
-    "eyebrow": "An exclusive community of designers in Israel",
+    "eyebrow": "For designers and companies in Israel",
     "headline": "Hiring is broken.<br></br>On both sides.",
-    "subheadline": "Designers get ghosted. Companies drown in applications they can't judge. {product} fixes hiring at the root: designers vetted by designers, a clear process and timeline for every role, and accountability on both sides.",
-    "cta": "Apply to join"
+    "subheadline": "Designers get ghosted. Companies get no-shows and resumes that say nothing. {product} puts both sides on equal terms: the same standards for everyone, a clear process for every role, and a track record each side can see.",
+    "cta": "Create your profile"
   },
   "twoSides": {
     "title": "How we fix it",
@@ -23,38 +24,38 @@
           "pain": "Applied, interviewed, then silence.",
           "fix": "Every company commits to answering every application on time. If it's a no, they tell you why."
         },
-        "review": {
+        "work": {
           "pain": "Filtered out by keywords and HR screens.",
-          "fix": "Your work is reviewed by designers, and shown through case studies instead of a resume."
+          "fix": "Companies see your case studies, not a keyword-matched resume."
         },
         "process": {
           "pain": "Processes that drag on with no end date.",
           "fix": "Every role shows its interview stages and expected timeline before you apply."
         },
-        "privacy": {
-          "pain": "Searching while employed feels risky.",
-          "fix": "Search confidentially. You decide who sees your name, photo and contact details."
+        "trackRecord": {
+          "pain": "No way to tell good employers from bad ones.",
+          "fix": "Every company has a track record: how often they answer, how fast, and whether their process matches what they promised."
         }
       }
     },
     "companies": {
       "title": "For companies",
       "items": {
-        "vetted": {
-          "pain": "Hundreds of applications you can't judge.",
-          "fix": "Every designer here is vetted by designers before they join."
-        },
         "work": {
           "pain": "Resumes that say nothing about craft.",
-          "fix": "Profiles built around case studies that show process and outcome."
+          "fix": "Every visible profile shows real work: at least one case study with process and outcome."
         },
-        "commitment": {
-          "pain": "Candidates who skip interviews or disappear.",
-          "fix": "Designers commit to showing up and keeping their status current. Repeated violations lead to removal."
+        "reliability": {
+          "pain": "Candidates who skip interviews or never reply.",
+          "fix": "Every designer has a reliability record too: response rate and interview attendance."
         },
         "fees": {
           "pain": "Recruiter fees on every hire.",
           "fix": "You pay for access, never per hire. You search and reach out to designers yourself."
+        },
+        "confidential": {
+          "pain": "Hiring in a market where everyone knows everyone.",
+          "fix": "Designers can search confidentially, so you can reach people who aren't openly looking."
         }
       }
     }
@@ -62,27 +63,27 @@
   "howItWorks": {
     "title": "How it works",
     "steps": {
-      "apply": "Apply with your portfolio and LinkedIn",
-      "review": "Our team of designers reviews it personally and gets back to you within 7 days",
-      "profile": "Approved? Build your profile, and companies will be able to find you"
+      "profile": "Create your profile with your portfolio and LinkedIn",
+      "caseStudy": "Add at least one case study, and your profile is ready to be found",
+      "found": "When companies join, they search and reach out. You decide who to talk to."
     }
   },
   "notAgency": {
     "title": "Not a hiring agency",
     "lead": "We don't place, introduce or recommend candidates.",
-    "body": "This is an exclusive community of vetted designers, where designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept."
+    "body": "Designers and companies find each other directly. Companies search and reach out on their own, and designers decide who to talk to. We set the rules both sides agree to, and make sure they're kept."
   },
   "audience": {
     "title": "Who it's for",
-    "body": "Product, UX/UI and web designers with real, shipped work. Years matter less than the work itself: if you're early in your career, you're welcome too, as long as your portfolio shows strong skills and real projects."
+    "body": "Product, UX/UI and web designers at any stage of their career, with real projects to show."
   },
   "founding": {
     "title": "Founding members",
     "body": "We're starting small: first we're building the designer community, and companies join next. The first designers will help shape how this works."
   },
   "form": {
-    "title": "Apply to join",
-    "intro": "It takes about three minutes. Fields marked as optional can be left empty.",
+    "title": "Create your profile",
+    "intro": "It takes about three minutes. We'll email you a link to sign in and finish your profile.",
     "optional": "optional",
     "required": "required",
     "groups": {
@@ -110,10 +111,10 @@
     },
     "select": "Select",
     "goodToKnowTitle": "Good to know",
-    "goodToKnow": "Joining doesn't guarantee a job. Companies on the platform search and reach out to designers themselves. What is guaranteed: a real answer to your application, never silence.",
-    "submit": "Send application",
-    "submitting": "Sending…",
-    "notConnected": "The form isn't connected yet. Submissions will work in the next build stage.",
+    "goodToKnow": "Joining doesn't guarantee a job. Companies on the platform search and reach out to designers themselves. What we do guarantee: the same rules for both sides, and consequences for anyone who breaks them.",
+    "submit": "Create my profile",
+    "submitting": "Creating…",
+    "notConnected": "The form isn't connected yet. Sign-up will work in the next build stage.",
     "errorSummary": "Please fix the highlighted fields.",
     "errors": {
       "required": "This field is required.",
@@ -122,21 +123,28 @@
       "invalidUrl": "Enter a full link, for example https://yourportfolio.com",
       "invalidLinkedin": "Enter a LinkedIn profile link, for example https://www.linkedin.com/in/yourname",
       "mustAccept": "Please confirm to continue.",
-      "duplicate": "We already have an application from this email.",
-      "cooldown": "You can reapply from {date}.",
       "tooFast": "That was quick. Please take a moment and try again.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "rateLimited": "Too many attempts. Please try again in an hour."
     }
   },
   "privacyNotice": {
     "title": "Your privacy",
-    "body": "We collect only what's needed to review your application: the details in this form and links to your work. Only our review team sees them during review. Providing them is voluntary, and you can ask to have them deleted at any time.",
+    "body": "We collect only what's needed for your profile: the details in this form and links to your work. Our team sees them for moderation only. Providing them is voluntary, and you can delete your account at any time.",
     "link": "Read the privacy policy"
   },
-  "thanks": {
-    "title": "Thanks for applying.",
-    "body": "We review every portfolio personally and will get back to you within 7 days.",
+  "checkEmail": {
+    "title": "Check your email.",
+    "body": "We've sent you a link to sign in and start your profile. It may take a minute; check spam if you don't see it.",
     "back": "Back to the homepage"
+  },
+  "login": {
+    "title": "Log in",
+    "intro": "Enter your email and we'll send you a link to sign in.",
+    "email": "Email",
+    "submit": "Send me a link",
+    "noAccount": "No profile yet? <link>Create one</link>",
+    "notConnected": "Login isn't connected yet. It will work in a later build stage."
   },
   "privacy": {
     "title": "Privacy",
@@ -144,15 +152,15 @@
     "sections": {
       "what": {
         "title": "What we store",
-        "body": "The details you entered in the form, links to your portfolio and LinkedIn, and later, the content you add to your profile."
+        "body": "The details you entered when signing up, links to your portfolio and LinkedIn, and the content you add to your profile."
       },
       "why": {
         "title": "Why",
-        "body": "To review your application and, once approved, to show your profile to companies on the platform."
+        "body": "To show your profile to companies on the platform, and to keep the platform safe (for example, removing fake profiles)."
       },
       "who": {
         "title": "Who sees it",
-        "body": "Only our review team during review. After approval, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to."
+        "body": "Our team, for moderation only. Once companies join, registered companies see your profile according to the privacy settings you choose. Phone and email are shown only if you choose to. Your reliability record (response and attendance) is visible to registered companies."
       },
       "voluntary": {
         "title": "It's voluntary",
@@ -161,6 +169,10 @@
       "control": {
         "title": "Your control",
         "body": "You can view, correct or delete your data at any time, from your profile or by email."
+      },
+      "unconfirmed": {
+        "title": "Unconfirmed sign-ups",
+        "body": "If you sign up but never confirm your email, we delete your details after 14 days."
       }
     },
     "contact": "Questions or deletion requests: <email></email>"
@@ -207,12 +219,24 @@
       "open_to_offers": "Open to offers",
       "not_looking": "Not looking"
     },
-    "declineReason": {
-      "no_process_case_studies": "Portfolio doesn't include case studies that show process",
-      "outside_focus": "Most work is outside the platform's current focus",
-      "not_enough_real_work": "Portfolio doesn't yet show enough real project work",
-      "portfolio_link_broken": "Portfolio link doesn't work",
+    "moderationReason": {
+      "fake_profile": "Profile appears fake or not a real designer",
+      "work_not_own": "Work shown isn't the designer's own or isn't credited",
+      "broken_portfolio": "Broken or missing portfolio link",
+      "broke_rules": "Didn't follow the designer rules",
+      "reported_by_company": "Reported by a company",
       "other": "Other"
+    },
+    "moderationAction": {
+      "warn": "Warn",
+      "hide": "Hide",
+      "remove": "Remove",
+      "restore": "Restore"
+    },
+    "status": {
+      "active": "Active",
+      "hidden": "Hidden",
+      "removed": "Removed"
     }
   }
 }

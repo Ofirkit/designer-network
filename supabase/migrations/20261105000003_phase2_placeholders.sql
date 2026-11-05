@@ -4,7 +4,8 @@
 --
 -- Reminder (phase 2 rules): employers pay for access, never per hire, and the
 -- platform never suggests or recommends designers. There is deliberately no
--- matching or recommendation table here.
+-- matching or recommendation table here. Both sides get a track record built
+-- from objective data (employer_metrics, designer_metrics).
 
 create table public.employers (
   id                uuid primary key default gen_random_uuid(),
@@ -45,7 +46,7 @@ create table public.jobs (
   expected_length_weeks int not null check (expected_length_weeks > 0),
   -- Optional but encouraged ("Budget shared" label). Both or neither.
   -- Monthly gross ILS. The top may be at most 30% above the bottom.
-  -- Visible only to logged-in approved designers, never to visitors.
+  -- Visible only to logged-in designers, never to visitors.
   budget_min            int check (budget_min is null or budget_min >= 0),
   budget_max            int,
   budget_note           text, -- what moves someone up the range
@@ -84,6 +85,34 @@ create table public.applications (
   rejection_note   text,
   created_at       timestamptz not null default now(),
   unique (job_id, designer_id)
+);
+
+-- An employer reaching out to a designer directly (not via a job application).
+create table public.contact_requests (
+  id               uuid primary key default gen_random_uuid(),
+  employer_id      uuid not null references public.employers (id) on delete cascade,
+  designer_id      uuid not null references public.designers (id) on delete cascade,
+  job_id           uuid references public.jobs (id) on delete set null,
+  sent_at          timestamptz not null default now(),
+  response_due_at  timestamptz,
+  responded_at     timestamptz,
+  response         text check (response is null or response in ('interested', 'not_interested')),
+  check ((responded_at is null) = (response is null))
+);
+
+-- Interview attendance, reported by the employer. The designer can respond;
+-- disputed reports don't count in designer_metrics until resolved.
+create table public.interview_reports (
+  id                  uuid primary key default gen_random_uuid(),
+  application_id      uuid references public.applications (id) on delete cascade,
+  contact_request_id  uuid references public.contact_requests (id) on delete cascade,
+  scheduled_at        timestamptz not null,
+  reported_by         text not null default 'employer' check (reported_by = 'employer'),
+  outcome             text not null check (outcome in ('attended', 'no_show', 'rescheduled_with_notice')),
+  designer_response   text,
+  disputed            boolean not null default false,
+  created_at          timestamptz not null default now(),
+  check (num_nonnulls(application_id, contact_request_id) = 1)
 );
 
 create table public.hire_confirmations (
@@ -134,6 +163,8 @@ alter table public.employers          enable row level security;
 alter table public.access_passes      enable row level security;
 alter table public.jobs               enable row level security;
 alter table public.applications       enable row level security;
+alter table public.contact_requests   enable row level security;
+alter table public.interview_reports  enable row level security;
 alter table public.hire_confirmations enable row level security;
 alter table public.employer_reviews   enable row level security;
 alter table public.reports            enable row level security;
@@ -165,8 +196,36 @@ left join public.jobs j on j.employer_id = e.id
 left join public.applications a on a.job_id = j.id
 group by e.id;
 
+-- Designer metrics: the mirror of employer metrics.
+create view public.designer_metrics
+with (security_invoker = true) as
+select
+  d.id as designer_id,
+  (select count(*) from public.contact_requests cr where cr.designer_id = d.id) as contact_requests_received,
+  (select count(*) from public.contact_requests cr where cr.designer_id = d.id and cr.responded_at is not null) as contact_requests_answered,
+  (
+    select case when count(*) = 0 then null
+                else round(count(cr.responded_at)::numeric / count(*), 3) end
+    from public.contact_requests cr where cr.designer_id = d.id
+  ) as response_rate,
+  (
+    select avg(cr.responded_at - cr.sent_at)
+    from public.contact_requests cr where cr.designer_id = d.id and cr.responded_at is not null
+  ) as avg_response_time,
+  (
+    select case when count(*) = 0 then null
+                else round(count(*) filter (where ir.outcome <> 'no_show')::numeric / count(*), 3) end
+    from public.interview_reports ir
+    left join public.applications a on a.id = ir.application_id
+    left join public.contact_requests cr on cr.id = ir.contact_request_id
+    where coalesce(a.designer_id, cr.designer_id) = d.id
+      and not ir.disputed
+  ) as interview_attendance_rate
+from public.designers d;
+
 revoke all on
   public.employers, public.access_passes, public.jobs, public.applications,
   public.hire_confirmations, public.employer_reviews, public.reports, public.messages,
-  public.employer_metrics
+  public.contact_requests, public.interview_reports,
+  public.employer_metrics, public.designer_metrics
 from anon, authenticated;

@@ -11,7 +11,7 @@ import {
   SPECIALTIES,
   YEARS_EXPERIENCE,
 } from "@/lib/options";
-import { applicationSchema } from "@/lib/validation/application";
+import { signupSchema } from "@/lib/validation/signup";
 
 type FieldErrors = Partial<Record<string, string>>;
 
@@ -41,7 +41,7 @@ function readForm(form: HTMLFormElement) {
   };
 }
 
-export function ApplicationForm() {
+export function SignupForm() {
   const t = useTranslations("form");
   const tOptions = useTranslations("options");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -54,7 +54,7 @@ export function ApplicationForm() {
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice(null);
-    const result = applicationSchema.safeParse(readForm(event.currentTarget));
+    const result = signupSchema.safeParse(readForm(event.currentTarget));
     if (!result.success) {
       const next: FieldErrors = {};
       for (const issue of result.error.issues) {
@@ -66,7 +66,7 @@ export function ApplicationForm() {
       return;
     }
     setErrors({});
-    // Stage B: send to the server action (honeypot, 3-second check, duplicate check, emails).
+    // Next stage: send to the server action (honeypot, 3-second check, rate limit, account creation, sign-in link).
     setNotice(t("notConnected"));
   }
 
