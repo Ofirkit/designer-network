@@ -201,7 +201,7 @@ Product name not decided: placeholder `[Product name]` in one constant.
 
 **Hero**
 - Headline: Hiring is broken. On both sides.
-- Subheadline: Designers get ghosted. Companies drown in applications they can't judge. [Product name] is an exclusive community of vetted designers, with clear rules for both sides: companies answer every candidate, designers show up. And both are held to them.
+- Subheadline: Designers get ghosted. Companies drown in applications they can't judge. [Product name] fixes hiring at the root: designers vetted by designers, roles with clear terms up front, and accountability on both sides.
 - CTA: Apply to join
 
 **What you get**
