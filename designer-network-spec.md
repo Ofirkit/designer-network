@@ -84,7 +84,7 @@ Short privacy page (copy below).
   - Internal notes (never shown to the applicant)
   - "Mark as replied" sets `replied_at = now()`
 - On **Approve**: send the approval email with a login link.
-- On **Decline**: do NOT send automatically. Show the drafted email (with the chosen reason) so I can copy it, edit it and send it personally. Then I mark it as replied.
+- On **Decline**: do NOT send automatically. Show a decline preview of the "Declined" email (default template, with the chosen reason and my note) that I can edit, with a "Send" button. The email is sent only when I click "Send". Then I mark it as replied.
 
 ## Application form fields
 | Field | Label | Type | Required |
@@ -169,9 +169,11 @@ Create only the tables below as empty structures (no UI, no API), so the schema 
 1. **Application received** (to applicant): thanks, "I review every portfolio personally and will get back to you within 7 days", plus the "Good to know" text.
 2. **New application alert** (to `ADMIN_EMAIL`): name, specialty, portfolio link, link to admin.
 3. **Approved** (to applicant): "You're in!", what happens next, login link to build the profile.
-4. **Daily reminder** (to `ADMIN_EMAIL`, Vercel Cron, 08:00 Israel time): number waiting for a reply and how many are older than 5 days, link to admin. Skip if zero.
-
-No automatic decline email: I send declines personally from the drafted text.
+4. **Declined** (to applicant): sent only when I click "Send" in the decline preview, never automatically on status change. Personal tone, signed by me. Default template:
+   - Subject: "About your application"
+   - Body: thanks for applying; I reviewed your portfolio personally; the reason (from the list) and my note; an invitation to reapply after improving (except for "Other"); my name.
+   - Reply-to set to `ADMIN_EMAIL`, so applicants can answer me directly.
+5. **Daily reminder** (to `ADMIN_EMAIL`, Vercel Cron, 08:00 Israel time): number waiting for a reply and how many are older than 5 days, link to admin. Skip if zero.
 
 ## Environment variables
 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, EMAIL_FROM, ADMIN_EMAIL, CRON_SECRET, NEXT_PUBLIC_SITE_URL. Add `.env.example` without real values.
