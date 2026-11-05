@@ -35,7 +35,7 @@ Public copy speaks as "we" (a team of reviewers), never "I". This applies to the
 - Collect the minimum. No ID numbers, addresses, dates of birth, or resume file uploads.
 - Portfolio and LinkedIn are stored as links, not files.
 - Designers manage their own profile content and can delete their account at any time; deletion removes all their data (including stored images).
-- Phone is optional and never shown publicly.
+- Phone is not collected in the application form. Approved designers can add it in their profile if they want to; it is never shown publicly, and shown to employers only if they turn on "phone shown".
 - A clear privacy notice at signup (what's collected, why, who can see it, that it's voluntary, and how to request deletion).
 - Service role key only on the server. RLS on every table.
 
@@ -73,6 +73,7 @@ Short privacy page (copy below).
   - Availability: actively looking / open to offers / not looking
   - Confidential search toggle (hide name and photo from employers in phase 2)
   - Portfolio link, LinkedIn link
+  - Phone (optional)
   - Profile photo (optional, Supabase Storage)
   - Case studies: add, edit, reorder, delete. Each has title, short description (problem, process, outcome), cover image, optional external link, up to 6 images.
   - Contact preferences: email shown to employers yes/no, phone shown yes/no (default: no for both)
@@ -97,7 +98,6 @@ Short privacy page (copy below).
 |---|---|---|---|
 | full_name | Full name | text | yes |
 | email | Email | email | yes |
-| phone | Phone | tel | no |
 | linkedin_url | LinkedIn profile | url | yes |
 | portfolio_url | Portfolio link | url | yes |
 | specialty | Specialty | select: Product design / UX/UI / Web design / Brand / Other | yes |

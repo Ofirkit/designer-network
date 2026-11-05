@@ -26,7 +26,6 @@ function readForm(form: HTMLFormElement) {
   return {
     full_name: text("full_name"),
     email: text("email"),
-    phone: text("phone"),
     linkedin_url: text("linkedin_url"),
     portfolio_url: text("portfolio_url"),
     specialty: text("specialty"),
@@ -98,16 +97,6 @@ export function ApplicationForm() {
       <Group title={t("groups.about")}>
         <TextField name="full_name" label={t("fields.full_name")} autoComplete="name" error={errorFor("full_name")} />
         <TextField name="email" type="email" label={t("fields.email")} autoComplete="email" dir="ltr" error={errorFor("email")} />
-        <TextField
-          name="phone"
-          type="tel"
-          label={t("fields.phone")}
-          optional={t("optional")}
-          hint={t("fields.phoneHint")}
-          autoComplete="tel"
-          dir="ltr"
-          error={errorFor("phone")}
-        />
       </Group>
 
       <Group title={t("groups.work")}>
@@ -222,7 +211,6 @@ const ERROR_KEYS: Record<string, true> = {
   required: true,
   tooLong: true,
   invalidEmail: true,
-  invalidPhone: true,
   invalidUrl: true,
   invalidLinkedin: true,
   mustAccept: true,

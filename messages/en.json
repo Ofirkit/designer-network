@@ -57,8 +57,6 @@
     "fields": {
       "full_name": "Full name",
       "email": "Email",
-      "phone": "Phone",
-      "phoneHint": "Never shown publicly.",
       "linkedin_url": "LinkedIn profile",
       "portfolio_url": "Portfolio link",
       "specialty": "Specialty",
@@ -84,7 +82,6 @@
       "required": "This field is required.",
       "tooLong": "This is too long.",
       "invalidEmail": "Enter a valid email address.",
-      "invalidPhone": "Enter a valid phone number, or leave it empty.",
       "invalidUrl": "Enter a full link, for example https://yourportfolio.com",
       "invalidLinkedin": "Enter a LinkedIn profile link, for example https://www.linkedin.com/in/yourname",
       "mustAccept": "Please confirm to continue.",

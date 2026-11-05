@@ -40,13 +40,6 @@ const mustBeChecked = z.literal(true, { error: "mustAccept" });
 export const applicationSchema = z.object({
   full_name: z.string().trim().min(2, "required").max(120, "tooLong"),
   email: z.string().trim().toLowerCase().max(254, "tooLong").pipe(z.email("invalidEmail")),
-  phone: z
-    .string()
-    .trim()
-    .max(30, "tooLong")
-    .refine((value) => value === "" || /^[+\d][\d\s()-]{6,}$/.test(value), "invalidPhone")
-    .optional()
-    .transform((value) => value || null),
   linkedin_url: linkedinUrl,
   portfolio_url: httpUrl,
   specialty: z.enum(SPECIALTIES, { error: "required" }),
